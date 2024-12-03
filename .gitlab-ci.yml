@@ -26,28 +26,24 @@ before_script:
 
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - dotnet build
-    - docker build -t $DOCKER_IMAGE .
+    - dotnet build --no-restore
 
 test:
   stage: test
-  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - dotnet test
+    - dotnet test --no-restore
 
 push:
   stage: build
-  image: docker:latest
+  image: docker:27.3.1
   services:
-    - docker:dind
+    - docker:27.3.1-dind
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker push $DOCKER_IMAGE
 
 deploy:
   stage: deploy
-  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
     - echo "Deploy"    
