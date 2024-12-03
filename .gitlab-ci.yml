@@ -38,7 +38,7 @@ tests:
     - 'dotnet test --no-restore'
   artifacts:
     paths:
-      - **/*.trx
+    - **/*.trx
   only:
     - main
 
