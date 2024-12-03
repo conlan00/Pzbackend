@@ -14,31 +14,38 @@ variables:
 cache:
   key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
   paths:
-    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/project.assets.json'
-    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*'
-    - '$NUGET_PACKAGES_DIRECTORY'
+    - $SOURCE_CODE_PATH$OBJECTS_DIRECTORY/project.assets.json
+    - $SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*
+    - $NUGET_PACKAGES_DIRECTORY
   policy: pull-push
 
 before_script:
-  - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
+  - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
 
 build:
   stage: build
-  script:
-    - 'dotnet build --no-restore'
-    - docker build -t $DOCKER_IMAGE .
+  image: docker:27.3.1
+  services:
+   - docker:27.3.1-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push $DOCKER_IMAGE
+  script:
+    - dotnet build --no-restore
+    - docker build -t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG
   only:
     - main
 
 tests:
   stage: test
   script:
-    - 'dotnet test --no-restore'
+    - dotnet test --no-restore
   artifacts:
     paths:
-      - '**/*.trx'  # Zbieranie plików wynikowych testów
+      - '**/*.trx'
   only:
     - main
 
