@@ -1,9 +1,9 @@
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
-#  - build
-#  - test
-#  - push
+  - build
+  - test
+  - push
   - deploy
 
 variables:
@@ -27,37 +27,37 @@ workflow:
     - if: '$CI_MERGE_REQUEST_ID' #merge
     - if: '$CI_COMMIT_BRANCH' #push
 
-#build:
-#  stage: build
-#  before_script:
-#    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
-#  script:
-#    - dotnet build --no-restore
+build:
+  stage: build
+  before_script:
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+  script:
+    - dotnet build --no-restore
 
-#test:
-#  stage: test
-#  before_script:
-#    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
-#  script:
-#    - dotnet test --no-restore
+test:
+  stage: test
+  before_script:
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+  script:
+    - dotnet test --no-restore
 
-#  lint:
-#  stage: test
-#  before_script:
-#    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
-#    - export PATH="$PATH:/root/.dotnet/tools"
-#    - dotnet tool install -g dotnet-format
-#  script:
-#    - dotnet format ./Backend.sln --verify-no-changes
+lint:
+  stage: test
+  before_script:
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet tool install -g dotnet-format
+  script:
+    - dotnet format ./Backend.sln --verify-no-changes
 
-#  push:
-#  stage: push
-#  image: docker:27.3.1
-#  before_script:
-#    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-#  script:
-#    - docker build -t $DOCKER_IMAGE .
-#    - docker push $DOCKER_IMAGE
+push:
+  stage: push
+  image: docker:27.3.1
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
 
 deploy:
   stage: deploy
@@ -69,9 +69,9 @@ deploy:
     - mkdir -p ~/.ssh
     - ssh-keyscan -H 74.234.194.80 >> ~/.ssh/known_hosts
   script:
-  #  - docker pull $DOCKER_IMAGE
-  #  - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
-  #  - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
+    - docker pull $DOCKER_IMAGE
+    - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
+    - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo snap install docker
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo docker load -i /home/pz2/$IMAGE_NAME.tar
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo docker run -d -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE
