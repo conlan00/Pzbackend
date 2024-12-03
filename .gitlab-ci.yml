@@ -66,6 +66,8 @@ deploy:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - echo "$SSH_PRIVATE_KEY" > pz2_key.pem
     - chmod 600 pz2_key.pem
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H 74.234.194.80 >> ~/.ssh/known_hosts
   script:
     - docker pull $DOCKER_IMAGE
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
