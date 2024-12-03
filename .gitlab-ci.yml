@@ -45,6 +45,7 @@ lint:
   stage: test
   before_script:
     - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - export PATH="$PATH:/root/.dotnet/tools"
     - dotnet tool install -g dotnet-format
   script:
     - dotnet format --check
