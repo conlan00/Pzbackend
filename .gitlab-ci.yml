@@ -36,6 +36,9 @@ tests:
   stage: test
   script:
     - 'dotnet test --no-restore'
+  artifacts:
+    paths:
+      - '**/*.trx'
   only:
     - main
 
