@@ -48,7 +48,7 @@ lint:
     - export PATH="$PATH:/root/.dotnet/tools"
     - dotnet tool install -g dotnet-format
   script:
-    - dotnet format ./Backend.csproj --check
+    - dotnet format --verify-no-changes
 
 push:
   stage: push
