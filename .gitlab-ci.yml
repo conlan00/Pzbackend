@@ -64,6 +64,8 @@ deploy:
   image: docker:27.3.1
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "$SSH_PRIVATE_KEY" > pz2_key.pem
+    - chmod 600 pz2_key.pem
   script:
     - docker pull $DOCKER_IMAGE
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
