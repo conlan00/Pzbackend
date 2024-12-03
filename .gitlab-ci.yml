@@ -69,6 +69,7 @@ deploy:
   script:
     - docker pull $DOCKER_IMAGE
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
+    - ls -la
     - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
     - ssh -i pz2_key.pem pz2@74.234.194.80 <<EOF
         docker load -i /home/pz2/$IMAGE_NAME.tar
