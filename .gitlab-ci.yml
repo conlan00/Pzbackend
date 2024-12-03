@@ -73,9 +73,9 @@ deploy:
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
     - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
     - ssh -i pz2_key.pem pz2@74.234.194.80 <<EOF
-        sudo snap install docker
-        docker load -i /home/pz2/$IMAGE_NAME.tar
-        docker run -d -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE
+        sudo snap install docker |
+        sudo docker load -i /home/pz2/$IMAGE_NAME.tar |
+        sudo docker run -d -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE |
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'    
