@@ -3,6 +3,7 @@ image: mcr.microsoft.com/dotnet/sdk:8.0
 stages:
   - build
   - test
+  - push
   - deploy
 
 variables:
@@ -36,7 +37,7 @@ test:
     - dotnet test --no-restore
 
 push:
-  stage: build
+  stage: push
   image: docker:27.3.1
   services:
     - docker:27.3.1-dind
