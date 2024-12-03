@@ -36,14 +36,11 @@ tests:
   stage: test
   script:
     - 'dotnet test --no-restore'
-  artifacts:
-    paths:
-    - **/*.trx
   only:
     - main
 
-
 deploy:
   stage: deploy
-  script: echo "Define your deployment script!"
+  script:
+    - echo "Define your deployment script!"
   environment: production
