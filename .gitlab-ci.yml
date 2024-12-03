@@ -53,8 +53,6 @@ lint:
 push:
   stage: push
   image: docker:27.3.1
-  services:
-    - docker:27.3.1-dind
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
@@ -63,5 +61,16 @@ push:
 
 deploy:
   stage: deploy
+  image: docker:27.3.1
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - echo "Deploy here"    
+    - docker pull $DOCKER_IMAGE
+    - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
+    - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
+    - ssh -i pz2_key.pem pz2@74.234.194.80 <<EOF
+        docker load -i /home/pz2/$IMAGE_NAME.tar
+        docker run -d -p 8080:80 $DOCKER_IMAGE
+      EOF
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'    
