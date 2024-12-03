@@ -73,7 +73,8 @@ deploy:
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
     - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo snap install docker
-    - ssh -i pz2_key.pem pz2@74.234.194.80 "sudo docker stop $(sudo docker ps -aq) && sudo docker rm $(sudo docker ps -aq) || true"
+    - ssh -i pz2_key.pem pz2@74.234.194.80 "sudo docker stop $(sudo docker ps -q --filter 'publish=7210') || true"
+    - ssh -i pz2_key.pem pz2@74.234.194.80 "sudo docker rm $(sudo docker ps -aq --filter 'publish=7210') || true"
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo docker load -i /home/pz2/$IMAGE_NAME.tar
     - ssh -i pz2_key.pem pz2@74.234.194.80 sudo docker run -d -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE
   rules:
