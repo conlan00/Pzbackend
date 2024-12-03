@@ -54,4 +54,4 @@ push:
 deploy:
   stage: deploy
   script:
-    - echo "Deploy"    
+    - echo "Deploy here"    
