@@ -30,25 +30,34 @@ workflow:
 build:
   stage: build
   before_script:
-  - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
   script:
     - dotnet build --no-restore
 
 test:
   stage: test
   before_script:
-  - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
   script:
     - dotnet test --no-restore
+
+lint:
+  stage: test
+  before_script:
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - dotnet tool install -g dotnet-format
+  script:
+    - dotnet format --check
 
 push:
   stage: push
   image: docker:27.3.1
   services:
     - docker:27.3.1-dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker build -t $DOCKER_IMAGE .
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker push $DOCKER_IMAGE
 
 deploy:
