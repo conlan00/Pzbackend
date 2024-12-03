@@ -26,33 +26,28 @@ before_script:
 
 build:
   stage: build
-  image: docker:latest  # Użyj obrazu Dockera, który zawiera Docker
-  services:
-    - docker:27.3.1-dind  # Usługa Docker-in-Docker
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
-  before_script:
-    - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - dotnet build --no-restore
-    - docker build -t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG .
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG
-  only:
-    - main
+    - dotnet build
+    - docker build -t $DOCKER_IMAGE .
 
-tests:
+test:
   stage: test
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - dotnet test --no-restore
-  artifacts:
-    paths:
-      - '**/*.trx'
-  only:
-    - main
+    - dotnet test
+
+push:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker push $DOCKER_IMAGE
 
 deploy:
   stage: deploy
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - echo "Define your deployment script!"
-  environment: production
+    - echo "Deploy"    
