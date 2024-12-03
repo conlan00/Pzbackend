@@ -9,7 +9,7 @@ variables:
   OBJECTS_DIRECTORY: 'obj'
   NUGET_PACKAGES_DIRECTORY: '.nuget'
   SOURCE_CODE_PATH: '*/*/'
-  DOCKER_IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  DOCKER_IMAGE: "$CI_REGISTRY_IMAGE/bilosek/dotnet-app:$CI_COMMIT_REF_SLUG"
 
 cache:
   key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
@@ -38,7 +38,7 @@ tests:
     - 'dotnet test --no-restore'
   artifacts:
     paths:
-      - '**/*.trx'
+      - '**/*.trx'  # Zbieranie plików wynikowych testów
   only:
     - main
 
