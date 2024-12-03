@@ -66,16 +66,14 @@ deploy:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - echo "$SSH_PRIVATE_KEY" > pz2_key.pem
     - chmod 600 pz2_key.pem
-    - mkdir -p ~/.ssh
-    - ssh-keyscan -H 74.234.194.80 >> ~/.ssh/known_hosts
   script:
     - docker pull $DOCKER_IMAGE
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE
-    - ls -la
-    - scp -v -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
+    - scp -i pz2_key.pem $IMAGE_NAME.tar pz2@74.234.194.80:/home/pz2/
     - ssh -i pz2_key.pem pz2@74.234.194.80 <<EOF
+        sudo snap install docker
         docker load -i /home/pz2/$IMAGE_NAME.tar
-        docker run -d -p 8080:80 $DOCKER_IMAGE
+        docker run -d -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE
       EOF
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'    
