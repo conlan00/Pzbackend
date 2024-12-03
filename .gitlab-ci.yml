@@ -10,6 +10,8 @@ variables:
   NUGET_PACKAGES_DIRECTORY: '.nuget'
   SOURCE_CODE_PATH: '*/*/'
   DOCKER_IMAGE: "$CI_REGISTRY_IMAGE/bilosek/dotnet-app:$CI_COMMIT_REF_SLUG"
+  IMAGE_NAME: "backend"
+  IMAGE_TAG: "$CI_COMMIT_REF_SLUG"
 
 cache:
   key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
