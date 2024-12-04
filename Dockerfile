@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
 COPY . .
 RUN dotnet restore "Backend.csproj" --disable-parallel
 RUN dotnet publish "Backend.csproj" -c release -o /app --no-restore
