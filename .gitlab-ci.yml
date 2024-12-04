@@ -34,7 +34,7 @@ test:
   script:
     - dotnet build --no-restore
     - dotnet test --no-restore --no-build --verbosity normal
-    - dotnet format ./Backend.sln --verify-no-changes --no-build --severity warn
+    - dotnet format ./Backend.sln --verify-no-changes --severity warn
 
 push:
   stage: push
