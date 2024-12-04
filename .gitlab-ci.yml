@@ -25,7 +25,7 @@ cache:
 workflow:
   rules:
     - if: '$CI_MERGE_REQUEST_ID' #merge
-    - if: '$CI_COMMIT_BRANCH' #push
+    - if: '$CI_COMMIT_BRANCH' #pushh
 
 #build:
 #  stage: build
