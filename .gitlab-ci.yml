@@ -32,7 +32,7 @@ test:
     - dotnet tool install -g dotnet-format
   script:
     - dotnet build --no-restore
-    - dotnet test --no-restore --no-build --verbosity normal
+    - dotnet test --no-restore --no-build --verbosity normal --logger "trx;LogFileName=test-results/results.trx"
     - dotnet format ./Backend.sln --verify-no-changes --severity warn
   artifacts:
     paths:
