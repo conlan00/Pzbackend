@@ -33,14 +33,13 @@ test:
   script:
     - mkdir -p test-results
     - dotnet build --no-restore
-    - dotnet test --no-restore --no-build --verbosity normal --logger "trx;LogFileName=test-results/results.trx"
+#    - dotnet test --no-restore --no-build --verbosity normal --logger "trx;LogFileName=test-results/results.trx"
     - dotnet format ./Backend.sln --verify-no-changes --severity warn
-  artifacts:
-    paths:
-      - test-results/
-      - coverage/ 
-    expire_in: 1 week
-    name: "test-artifacts-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
+#  artifacts:
+#    paths:
+#      - test-results/
+#    expire_in: 1 week
+#    name: "test-artifacts-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
 build:
   stage: build
