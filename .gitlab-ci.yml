@@ -46,6 +46,11 @@ build:
   image: docker:27.3.1
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  cache:
+    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $SOURCE_CODE_PATH$OBJECTS_DIRECTORY/
+      - $NUGET_PACKAGES_DIRECTORY
   script:
     - export IMAGE_TAG="$CI_COMMIT_REF_SLUG-$(date +%Y%m%d%H%M%S)"
     - echo $IMAGE_TAG > image_tag.txt
