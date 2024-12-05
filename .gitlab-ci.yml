@@ -31,6 +31,7 @@ test:
     - export PATH="$PATH:/root/.dotnet/tools"
     - dotnet tool install -g dotnet-format
   script:
+    - mkdir -p test-results
     - dotnet build --no-restore
     - dotnet test --no-restore --no-build --verbosity normal --logger "trx;LogFileName=test-results/results.trx"
     - dotnet format ./Backend.sln --verify-no-changes --severity warn
