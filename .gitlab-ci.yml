@@ -45,20 +45,20 @@ deploy:
   image: docker:27.3.1
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - echo "$SSH_PRIVATE_KEY" > $KEY_PATH
-    - chmod 600 $KEY_PATH
+    - echo "$SSH_PRIVATE_KEY" > $KEY_PATH2
+    - chmod 600 $KEY_PATH2
     - mkdir -p ~/.ssh
     - ssh-keyscan -H $REMOTE_IP2 >> ~/.ssh/known_hosts
   script:
     - IMAGE_TAG=$(cat image_tag.txt)
     - docker pull $DOCKER_IMAGE:$IMAGE_TAG
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE:$IMAGE_TAG
-    - scp -i $KEY_PATH $IMAGE_NAME.tar $REMOTE_HOST2@$REMOTE_IP2:/home/$REMOTE_HOST2/
-    - ssh -i $KEY_PATH $REMOTE_HOST2@$REMOTE_IP2 sudo snap install docker
-    - ssh -i $KEY_PATH $REMOTE_HOST2@$REMOTE_IP2 "sudo docker stop \$(sudo docker ps -q) || true"
-    - ssh -i $KEY_PATH $REMOTE_HOST2@$REMOTE_IP2 "sudo docker rm \$(sudo docker ps -aq) || true"
-    - ssh -i $KEY_PATH $REMOTE_HOST2@$REMOTE_IP2 sudo docker load -i /home/$REMOTE_HOST2/$IMAGE_NAME.tar
-    - ssh -i $KEY_PATH $REMOTE_HOST2@$REMOTE_IP2 sudo docker run -d --name backend --restart always -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE:$IMAGE_TAG
+    - scp -i $KEY_PATH2 $IMAGE_NAME.tar $REMOTE_HOST2@$REMOTE_IP2:/home/$REMOTE_HOST2/
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo snap install docker
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker stop \$(sudo docker ps -q) || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker rm \$(sudo docker ps -aq) || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker load -i /home/$REMOTE_HOST2/$IMAGE_NAME.tar
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker run -d --name backend --restart always -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE:$IMAGE_TAG
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'  
       when: on_success 
