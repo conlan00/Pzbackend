@@ -45,7 +45,7 @@ deploy:
   image: docker:27.3.1
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - echo "$SSH_PRIVATE_KEY" > $KEY_PATH2
+    - echo "$SSH_PRIVATE_KEY2" > $KEY_PATH2
     - chmod 600 $KEY_PATH2
     - mkdir -p ~/.ssh
     - ssh-keyscan -H $REMOTE_IP2 >> ~/.ssh/known_hosts
