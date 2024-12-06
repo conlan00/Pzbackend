@@ -12,6 +12,4 @@ RUN dotnet dev-certs https --trust
 ENV ASPNETCORE_URLS="https://+:7210;http://+:5084" \
     ASPNETCORE_ENVIRONMENT="Development"
 
-RUN ls -la
-
 ENTRYPOINT ["dotnet", "./publish/Backend.dll"]
