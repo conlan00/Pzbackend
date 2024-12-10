@@ -1,5 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()    // Allows requests from any origin
+              .AllowAnyMethod()    // Allows any HTTP method (GET, POST, etc.)
+              .AllowAnyHeader();   // Allows any headers
+    });
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -9,12 +17,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
-app.UseCors(policy =>
-    policy.AllowAnyOrigin()
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          );
+app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
