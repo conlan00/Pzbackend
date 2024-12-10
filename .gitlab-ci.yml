@@ -1,0 +1,64 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  DOCKER_IMAGE: "$CI_REGISTRY_IMAGE/dotnet"
+  IMAGE_NAME: "backend"
+
+workflow:
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID' #merge
+    - if: '$CI_COMMIT_BRANCH'
+
+test:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  before_script:
+    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet tool install -g dotnet-format
+  script:
+    - mkdir -p test-results
+    - dotnet build --no-restore
+    - dotnet test --no-restore --no-build --verbosity normal
+    - dotnet format ./Backend.sln --verify-no-changes --severity warn
+
+build:
+  stage: build
+  image: docker:27.3.1
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - export IMAGE_TAG="$CI_COMMIT_REF_SLUG-$(date +%Y%m%d%H%M%S)"
+    - echo $IMAGE_TAG > image_tag.txt
+    - docker build -t $DOCKER_IMAGE:$IMAGE_TAG .
+    - docker push $DOCKER_IMAGE:$IMAGE_TAG
+  artifacts:
+    paths:
+      - image_tag.txt
+
+deploy:
+  stage: deploy
+  image: docker:27.3.1
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "$SSH_PRIVATE_KEY2" > $KEY_PATH2
+    - chmod 600 $KEY_PATH2
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H $REMOTE_IP2 >> ~/.ssh/known_hosts
+  script:
+    - IMAGE_TAG=$(cat image_tag.txt)
+    - docker pull $DOCKER_IMAGE:$IMAGE_TAG
+    - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE:$IMAGE_TAG
+    - scp -i $KEY_PATH2 $IMAGE_NAME.tar $REMOTE_HOST2@$REMOTE_IP2:/home/$REMOTE_HOST2/
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo snap install docker
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker stop \$(sudo docker ps -q) || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker rm \$(sudo docker ps -aq) || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker load -i /home/$REMOTE_HOST2/$IMAGE_NAME.tar
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker run -d --name backend --restart always -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE:$IMAGE_TAG
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'  
+      when: on_success 
