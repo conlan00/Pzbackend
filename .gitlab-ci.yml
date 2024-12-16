@@ -55,8 +55,8 @@ deploy:
     - docker save -o $IMAGE_NAME.tar $DOCKER_IMAGE:$IMAGE_TAG
     - scp -i $KEY_PATH2 $IMAGE_NAME.tar $REMOTE_HOST2@$REMOTE_IP2:/home/$REMOTE_HOST2/
     - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo snap install docker
-    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker stop \$(sudo docker ps -q) || true"
-    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker rm \$(sudo docker ps -aq) || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker stop \$(sudo docker ps -q) --force || true"
+    - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 "sudo docker rm \$(sudo docker ps -aq) --force || true"
     - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker load -i /home/$REMOTE_HOST2/$IMAGE_NAME.tar
     - ssh -i $KEY_PATH2 $REMOTE_HOST2@$REMOTE_IP2 sudo docker run -d --name backend --restart always -p 7210:7210 -p 5084:5084 $DOCKER_IMAGE:$IMAGE_TAG
   rules:
