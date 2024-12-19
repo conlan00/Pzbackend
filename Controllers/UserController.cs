@@ -15,7 +15,7 @@ namespace Backend.Controllers
 
         private static readonly List<User> Users = new List<User>
     {
-        new User { Username = "admin", Password = "password123" }
+        new User { Name = "admin", Token = "password123" }
     };
 
         [HttpGet("rentals")]
@@ -57,14 +57,14 @@ namespace Backend.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] User user)
         {
-            var existingUser = Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+            var existingUser = Users.FirstOrDefault(u => u.Name == user.Name && u.Token == user.Token);
 
             if (existingUser == null)
             {
                 return Unauthorized(new { Message = "Invalid username or password." });
             }
 
-            return Ok(new { Message = "Login successful!", Token = GenerateToken(user.Username) });
+            return Ok(new { Message = "Login successful!", Token = GenerateToken(user.Name) });
         }
 
         private string GenerateToken(string username)
