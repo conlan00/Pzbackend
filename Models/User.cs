@@ -1,8 +1,19 @@
-﻿namespace Backend.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace Backend.Models;
+
+public partial class User
 {
-    public class User
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
+    public int Id { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public int Points { get; set; }
+
+    public string Token { get; set; } = null!;
+
+    public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
+
+    public virtual ICollection<OperationHistory> OperationHistories { get; set; } = new List<OperationHistory>();
 }

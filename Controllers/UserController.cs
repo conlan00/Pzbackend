@@ -45,7 +45,7 @@ namespace Backend.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] User user)
         {
-            if (Users.Any(u => u.Username == user.Username))
+            if (Users.Any(u => u.Name == user.Name))
             {
                 return BadRequest(new { Message = "Username already exists." });
             }
