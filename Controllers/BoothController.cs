@@ -7,7 +7,7 @@ namespace Backend.Controllers
     [ApiController]
     public class BoothController : ControllerBase
     {
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult GetNearbyBooths([FromQuery] int radius)
         {
             return Ok(new[] { "Booth 1 within " + radius + "km", "Booth 2 within " + radius + "km" });
@@ -35,6 +35,6 @@ namespace Backend.Controllers
         public IActionResult ApplyFilters()
         {
             return Ok(new { Message = "Filters applied successfully." });
-        }
+        }*/
     }
 }

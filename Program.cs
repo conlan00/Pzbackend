@@ -1,3 +1,7 @@
+using Backend.Models;
+using Backend.Repositories.UserRepository;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
@@ -14,7 +18,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<LibraryContext>(options => {
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection1"));
+});
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");

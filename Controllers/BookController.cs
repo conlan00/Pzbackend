@@ -7,7 +7,7 @@ namespace Backend.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private static readonly string[] BookTitles = new[]
+        /*private static readonly string[] BookTitles = new[]
         {
         "The Hobbit", "1984", "Moby Dick", "War and Peace"
         };
@@ -73,6 +73,6 @@ namespace Backend.Controllers
                 new { Title = "Sample Book 2", Category = category, Language = language, Condition = condition }
             }
             });
-        }
+        }*/
     }
 }

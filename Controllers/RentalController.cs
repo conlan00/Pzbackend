@@ -7,7 +7,7 @@ namespace Backend.Controllers
     [ApiController]
     public class RentalController : ControllerBase
     {
-        private static readonly string[] RentalStatuses = new[]
+       /* private static readonly string[] RentalStatuses = new[]
         {
         "Active", "Extended", "Completed"
         };
@@ -34,6 +34,6 @@ namespace Backend.Controllers
         public IActionResult GetRentalConfirmation()
         {
             return Ok(new { Book = "Example Book", ReturnDate = DateTime.Now.AddDays(7).ToShortDateString() });
-        }
+        }*/
     }
 }

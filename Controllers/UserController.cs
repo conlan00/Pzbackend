@@ -1,4 +1,5 @@
 ﻿using Backend.Models;
+using Backend.Repositories.UserRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,13 @@ namespace Backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private static readonly string[] RentalSummaries = new[]
+
+        private readonly IUserRepository _userRepository;
+        public UserController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+      /*  private static readonly string[] RentalSummaries = new[]
    {
         "Book 1", "Book 2", "Book 3", "Book 4", "Book 5"
     };
@@ -53,23 +60,17 @@ namespace Backend.Controllers
             Users.Add(user);
             return Ok(new { Message = "User registered successfully!" });
         }
-
+*/
         [HttpPost("login")]
-        public IActionResult Login([FromBody] User user)
+        public async Task<ActionResult<User>>Login()
         {
-            var existingUser = Users.FirstOrDefault(u => u.Name == user.Name && u.Token == user.Token);
-
-            if (existingUser == null)
-            {
-                return Unauthorized(new { Message = "Invalid username or password." });
-            }
-
-            return Ok(new { Message = "Login successful!", Token = GenerateToken(user.Name) });
+            var Data = await _userRepository.Login();
+            return Ok(Data);
         }
-
+/*
         private string GenerateToken(string username)
         {
             return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{DateTime.Now}"));
-        }
+        }*/
     }
 }
