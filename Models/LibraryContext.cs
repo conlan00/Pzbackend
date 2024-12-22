@@ -23,15 +23,16 @@ public partial class LibraryContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
+    public virtual DbSet<LikedBook> LikedBooks { get; set; }
+
     public virtual DbSet<OperationHistory> OperationHistories { get; set; }
 
     public virtual DbSet<Shelter> Shelters { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=74.234.193.10,1433;Database=Library;Encrypt=False;User=sa;Password=zaq1@WSX;");
+/*    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=DbConnection2");*/
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -131,6 +132,28 @@ public partial class LibraryContext : DbContext
             entity.Property(e => e.CategoryName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<LikedBook>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("LikedBook_PK");
+
+            entity.ToTable("LikedBook");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.BookId).HasColumnName("Book_ID");
+            entity.Property(e => e.LikedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UserId).HasColumnName("User_ID");
+
+            entity.HasOne(d => d.Book).WithMany(p => p.LikedBooks)
+                .HasForeignKey(d => d.BookId)
+                .HasConstraintName("LikedBook_Book_FK");
+
+            entity.HasOne(d => d.User).WithMany(p => p.LikedBooks)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("LikedBook_User_FK");
         });
 
         modelBuilder.Entity<OperationHistory>(entity =>

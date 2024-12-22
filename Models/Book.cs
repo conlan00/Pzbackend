@@ -24,4 +24,6 @@ public partial class Book
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
 
     public virtual Category Category { get; set; } = null!;
+
+    public virtual ICollection<LikedBook> LikedBooks { get; set; } = new List<LikedBook>();
 }

@@ -15,5 +15,7 @@ public partial class User
 
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
 
+    public virtual ICollection<LikedBook> LikedBooks { get; set; } = new List<LikedBook>();
+
     public virtual ICollection<OperationHistory> OperationHistories { get; set; } = new List<OperationHistory>();
 }
