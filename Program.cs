@@ -1,9 +1,11 @@
 using Backend.Models;
+using Backend.Repositories.ShelterRepository;
 using Backend.Repositories.UserRepository;
 
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Backend.Services.ShelterService;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.OpenApi.Models;
@@ -21,6 +23,7 @@ builder.Services.AddCors(options =>
       // .AllowCredentials();
     });
 });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -145,6 +148,12 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+
+// Rejestracja repozytorium
+builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+// Rejestracja serwisu
+builder.Services.AddScoped<IShelterService, ShelterService>();
 
 var app = builder.Build();
 

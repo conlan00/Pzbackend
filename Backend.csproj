@@ -26,7 +26,7 @@
     <Folder Include="Repositories\BookRepository\" />
     <Folder Include="Repositories\BoothRepository\" />
     <Folder Include="Repositories\RenatalRepository\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\ShelterService\" />
   </ItemGroup>
 
 </Project>
