@@ -1,5 +1,7 @@
 using Backend.Models;
+using Backend.Repositories.ShelterRepository;
 using Backend.Repositories.UserRepository;
+using Backend.Services.ShelterService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,7 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();   // Allows any headers
     });
 });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -22,6 +25,12 @@ builder.Services.AddDbContext<LibraryContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection1"));
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Rejestracja repozytorium
+builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+// Rejestracja serwisu
+builder.Services.AddScoped<IShelterService, ShelterService>();
+
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");

@@ -16,5 +16,9 @@ namespace Backend.Repositories.UserRepository
            var user= await _libraryContext.Users.FirstOrDefaultAsync();
             return user;
         }
+        public async Task<IEnumerable<User>> GetAllUsers()
+        {
+            return await _libraryContext.Users.ToListAsync();
+        }
     }
 }
