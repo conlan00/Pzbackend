@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Backend.Models; 
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
@@ -7,6 +9,45 @@ namespace Backend.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
+
+    private readonly LibraryContext _context;
+
+    public BookController(LibraryContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet("user-books/{userId}")]
+    public async Task<IActionResult> GetBooksByUser(int userId)
+    {
+        // Pobierz książki wypożyczone przez użytkownika
+        var books = await _context.Borrows
+            .Where(b => b.UserId == userId) 
+            .Include(b => b.Book)          
+            .Select(b => new
+            {
+                Title = b.Book.Title,
+                Author = b.Book.Author,
+                Cover = b.Book.Cover,
+                ReturnTime = b.ReturnTime
+            })
+            .ToListAsync();
+    
+        if (!books.Any())
+        {
+            return NotFound(new { Message = $"No books found for user with ID {userId}" });
+        }
+    
+        return Ok(new
+        {
+            UserId = userId,
+            Books = books
+        });
+    }
+
+
+
+
         /*private static readonly string[] BookTitles = new[]
         {
         "The Hobbit", "1984", "Moby Dick", "War and Peace"

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Backend.Repositories;
 
 namespace Backend.Controllers
 {
@@ -7,6 +8,39 @@ namespace Backend.Controllers
     [ApiController]
     public class BoothController : ControllerBase
     {
+    private readonly BookShelterRepository _bookShelterRepository;
+
+    public BoothController(BookShelterRepository bookShelterRepository)
+    {
+        _bookShelterRepository = bookShelterRepository;
+    }
+
+    [HttpGet("books-booth/{id}")]
+    public async Task<IActionResult> GetBooksInShelter(int id)
+    {
+        var books = await _bookShelterRepository.GetBooksInShelterAsync(id);
+
+        if (!books.Any())
+        {
+            return NotFound(new { Message = $"Nie znaleziono żadnej książki o ID {id}" });
+        }
+
+        return Ok(new
+        {
+            ShelterId = id,
+            Books = books.Select(b => new
+            {
+                b.Id,
+                b.Title,
+                b.Author,
+                b.Description
+            })
+        });
+    }
+
+
+
+
         /*[HttpGet]
         public IActionResult GetNearbyBooths([FromQuery] int radius)
         {
@@ -36,5 +70,8 @@ namespace Backend.Controllers
         {
             return Ok(new { Message = "Filters applied successfully." });
         }*/
+
+
+
     }
 }
