@@ -20,5 +20,16 @@ namespace Backend.Repositories.UserRepository
         {
             return await _libraryContext.Users.ToListAsync();
         }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _libraryContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            _libraryContext.Users.Update(user);
+            return await _libraryContext.SaveChangesAsync() > 0;
+        }
     }
 }

@@ -6,5 +6,7 @@ namespace Backend.Repositories.UserRepository
     {
         Task<User?> Login();
         Task<IEnumerable<User>> GetAllUsers();
+        Task<User?> GetUserByIdAsync(int userId);
+        Task<bool> UpdateUserAsync(User user);
     }
 }

@@ -21,11 +21,16 @@ namespace Backend.Services.ShelterService
         {
             // Pobierz wszystkie schroniska z repozytorium
             var shelters = await _shelterRepository.GetAllSheltersAsync();
-
+            foreach (var shelter in shelters)
+            {
+                Console.WriteLine($"ID: {shelter.Id}, Name: {shelter.Name}, Latitude: {shelter.Lat}, Longitude: {shelter.Long}");
+            }
             // Filtruj schroniska na podstawie odleg³oœci
             return shelters.Where(shelter =>
             {
                 double distance = CalculateDistance(userLat, userLong, shelter.Lat, shelter.Long);
+
+                Console.WriteLine(distance);
                 return distance <= radius;
             }).ToList();
         }

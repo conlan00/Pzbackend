@@ -11,68 +11,52 @@ namespace Backend.Controllers
     public class UserController : ControllerBase
     {
 
-        private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        //private readonly IUserRepository _userRepository;
+        //public UserController(IUserRepository userRepository)
+        //{
+        //    _userRepository = userRepository;
+        //}
+
+        //[HttpPost("login")]
+        //public async Task<ActionResult<User>>Login()
+        //{
+        //    var Data = await _userRepository.Login();
+        //    return Ok(Data);
+        //}
+
+        private readonly IUserService _userService;
+
+        public UserController(IUserService userService) // Poprawiony konstruktor
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
-        /*  private static readonly string[] RentalSummaries = new[]
-     {
-          "Book 1", "Book 2", "Book 3", "Book 4", "Book 5"
-      };
 
-          private static readonly List<User> Users = new List<User>
-      {
-          new User { Name = "admin", Token = "password123" }
-      };
-
-          [HttpGet("rentals")]
-          public IEnumerable<string> GetRentals()
-          {
-              return RentalSummaries;
-          }
-
-          [HttpGet("loyalty-points")]
-          public int GetLoyaltyPoints()
-          {
-              return 150; // Example static points
-          }
-
-          [HttpGet("favorite-books")]
-          public IEnumerable<string> GetFavoriteBooks()
-          {
-              return new[] { "Favorite Book 1", "Favorite Book 2" };
-          }
-
-          [HttpPost("loyalty-points/add")]
-          public IActionResult AddLoyaltyPoints()
-          {
-              return Ok(new { Message = "80 loyalty points added!" });
-          }
-
-          [HttpPost("register")]
-          public IActionResult Register([FromBody] User user)
-          {
-              if (Users.Any(u => u.Name == user.Name))
-              {
-                  return BadRequest(new { Message = "Username already exists." });
-              }
-
-              Users.Add(user);  
-              return Ok(new { Message = "User registered successfully!" });
-          }
-  */
-        //[Authorize]
-        [HttpPost("login")]
-        public async Task<ActionResult<User>>Login()
+        [HttpPost("{userId}/add-points")]
+        public async Task<IActionResult> AddPointsToUser(int userId, [FromQuery] int pointsToAdd = 80)
         {
-            var Data = await _userRepository.Login();
-            return Ok(Data);
+            var result = await _userService.AddPointsToUserAsync(userId, pointsToAdd);
+
+            if (!result)
+            {
+                return Ok(false); // Zwracamy false, gdy użytkownik nie istnieje
+            }
+
+            return Ok(true); // Zwracamy true, gdy operacja się powiodła
         }
-/*
-        private string GenerateToken(string username)
+
+        [HttpPost("{userId}/return-book/{bookId}")]
+        public async Task<IActionResult> ReturnBook(int userId, int bookId)
         {
-            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{DateTime.Now}"));
-        }*/
+            try
+            {
+                var points = await _userService.ReturnBookAsync(userId, bookId);
+                return Ok(new { Points = points }); // Zwracamy JSON z liczbą punktów
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
     }
 }

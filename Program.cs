@@ -150,11 +150,17 @@ builder.Services.AddSwaggerGen(options =>
 
 
 
-// Rejestracja repozytorium
+
 builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
-// Rejestracja serwisu
 builder.Services.AddScoped<IShelterService, ShelterService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");
