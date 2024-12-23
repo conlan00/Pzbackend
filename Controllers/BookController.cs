@@ -10,7 +10,6 @@ namespace Backend.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-
         private readonly IBookRepository _bookRepository;
         private readonly IBookService _bookService;
         public BookController(IBookService bookService, IBookRepository bookRepository)
@@ -25,6 +24,20 @@ namespace Backend.Controllers
             var borrows = await _bookService.ReturnBook(userId, bookId);  
             return Ok(borrows);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById(int id)
+        {
+            var book = await _bookService.GetBookByIdAsync(id);
 
+            if (book == null)
+            {
+                return NotFound($"Book with ID {id} not found.");
+            }
+
+            return Ok(book);
+        }
     }
+
+        
+    
 }

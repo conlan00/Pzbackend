@@ -1,4 +1,4 @@
-﻿using Backend.Dto;
+﻿using Backend.DTO;
 using Backend.Models;
 //using Clerk.Net.Client.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -52,6 +52,21 @@ namespace Backend.Repositories.UserRepository
         {
             var userExist = await _libraryContext.Users.FindAsync(userId);
             return userExist != null;
+        }
+        public async Task<IEnumerable<User>> GetAllUsers()
+        {
+            return await _libraryContext.Users.ToListAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _libraryContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            _libraryContext.Users.Update(user);
+            return await _libraryContext.SaveChangesAsync() > 0;
         }
     }
 }

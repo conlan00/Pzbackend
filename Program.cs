@@ -1,10 +1,12 @@
 using Backend.Models;
 using Backend.Repositories.BookRepository;
+using Backend.Repositories.ShelterRepository;
 using Backend.Repositories.UserRepository;
 using Backend.Services.BookService;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Backend.Services.ShelterService;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.OpenApi.Models;
@@ -22,6 +24,7 @@ builder.Services.AddCors(options =>
       // .AllowCredentials();
     });
 });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -117,6 +120,16 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
+
+
+builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+builder.Services.AddScoped<IShelterService, ShelterService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
+
+
+builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");

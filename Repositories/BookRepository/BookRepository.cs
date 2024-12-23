@@ -1,4 +1,4 @@
-﻿using Backend.Dto;
+﻿using Backend.DTO;
 using Backend.Models;
 using Clerk.Net.Client.Models;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +86,7 @@ namespace Backend.Repositories.BookRepository
                             bcl.category.CategoryName,
                             bcl.likedBook.UserId
                         })
-                    .Where(result => result.UserId== userId)  // Filtrujemy po userId
+                    .Where(result => result.UserId == userId)  // Filtrujemy po userId
                     .ToListAsync();
 
                 // Mapowanie wyników na BookDto
@@ -107,17 +107,17 @@ namespace Backend.Repositories.BookRepository
             return new List<BookDto>();
 
         }
-        public async Task<Borrow?> returnBorrow(int userId,int bookId)
+        public async Task<Borrow?> returnBorrow(int userId, int bookId)
         {
-            var borrow = await _libraryContext.Borrows.FirstOrDefaultAsync(x=> x.BookId==bookId && x.UserId==userId);
+            var borrow = await _libraryContext.Borrows.FirstOrDefaultAsync(x => x.BookId == bookId && x.UserId == userId);
             return borrow;
         }
         public async Task<bool> setReturnTime(Borrow borrow, DateTime time)
         {
-           
+
             if (borrow == null)
             {
-                return false; 
+                return false;
             }
 
             borrow.ReturnTime = time;
@@ -125,7 +125,7 @@ namespace Backend.Repositories.BookRepository
             await _libraryContext.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> setLoyaltyPoints(int points,int userId)
+        public async Task<bool> setLoyaltyPoints(int points, int userId)
         {
             var userExist = await _libraryContext.Users.FindAsync(userId);
             if (userExist == null)
@@ -145,6 +145,11 @@ namespace Backend.Repositories.BookRepository
         {
             var userExist = await _libraryContext.Users.FindAsync(userId);
             return userExist != null;
+        }
+
+        public async Task<Book?> GetBookByIdAsync(int id)
+        {
+            return await _libraryContext.Books.FirstOrDefaultAsync(b => b.Id == id);
         }
     }
 }

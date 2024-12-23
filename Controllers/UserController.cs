@@ -12,15 +12,34 @@ namespace Backend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+ 
+   
 
+        private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
         private readonly IBookRepository _bookRepository;
-        public UserController(IUserRepository userRepository, IBookRepository bookRepository)
+
+        public UserController(IUserService userService, IUserRepository userRepository, IBookRepository bookRepository) // Poprawiony konstruktor
         {
+            _userService = userService;
+
             _userRepository = userRepository;
             _bookRepository = bookRepository;
         }
-       
+
+        [HttpPost("{userId}/add-points")]
+        public async Task<IActionResult> AddPointsToUser(int userId, [FromQuery] int pointsToAdd = 80)
+        {
+            var result = await _userService.AddPointsToUserAsync(userId, pointsToAdd);
+
+            if (!result)
+            {
+                return Ok(false); // Zwracamy false, gdy użytkownik nie istnieje
+            }
+
+            return Ok(true); // Zwracamy true, gdy operacja się powiodła
+        }
+
         //[Authorize]
         [HttpPost("register")]
         public async Task<ActionResult>Register(User user)
@@ -78,6 +97,20 @@ namespace Backend.Controllers
             else
             {
                 return BadRequest("Nie polubiłeś żadnych książek");
+            }
+        }
+
+        [HttpPost("{userId}/return-book/{bookId}")]
+        public async Task<IActionResult> ReturnBook(int userId, int bookId)
+        {
+            try
+            {
+                var points = await _userService.ReturnBookAsync(userId, bookId);
+                return Ok(new { Points = points }); // Zwracamy JSON z liczbą punktów
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
             }
         }
 
