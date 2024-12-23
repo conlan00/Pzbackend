@@ -33,7 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<LibraryContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection2"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection1"));
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
