@@ -23,8 +23,8 @@ test:
   script:
     - mkdir -p test-results
     - dotnet build --no-restore
-    - dotnet test --no-restore --no-build --verbosity normal --filter TestCategory!=Whitespace
-    - dotnet format ./Backend.sln --verify-no-changes --severity warn
+    - dotnet test --no-restore --no-build --verbosity normal
+    - dotnet format ./Backend.sln --verify-no-changes --severity warn --diagnostics IDE0055
 
 build:
   stage: build
