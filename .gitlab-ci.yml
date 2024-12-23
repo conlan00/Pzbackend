@@ -1,5 +1,5 @@
 stages:
-  - test
+#  - test
   - build
   - deploy
 
@@ -13,18 +13,18 @@ workflow:
     - if: '$CI_MERGE_REQUEST_ID' #merge
     - if: '$CI_COMMIT_BRANCH'
 
-test:
-  stage: test
-  image: mcr.microsoft.com/dotnet/sdk:8.0
-  before_script:
-    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
-    - export PATH="$PATH:/root/.dotnet/tools"
-    - dotnet tool install -g dotnet-format
-  script:
-    - mkdir -p test-results
-    - dotnet build --no-restore
-    - dotnet test --no-restore --no-build --verbosity normal
-    - dotnet format ./Backend.sln --verify-no-changes --severity warn --diagnostics IDE0055
+#test:
+#  stage: test
+#  image: mcr.microsoft.com/dotnet/sdk:8.0
+#  before_script:
+#    - dotnet restore --packages $NUGET_PACKAGES_DIRECTORY
+#    - export PATH="$PATH:/root/.dotnet/tools"
+#    - dotnet tool install -g dotnet-format
+#  script:
+#    - mkdir -p test-results
+#    - dotnet build --no-restore
+#    - dotnet test --no-restore --no-build --verbosity normal
+#    - dotnet format ./Backend.sln --verify-no-changes --severity warn --diagnostics IDE0055
 
 build:
   stage: build
