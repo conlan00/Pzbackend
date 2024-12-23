@@ -6,5 +6,6 @@ namespace Backend.Repositories.ShelterRepository
     {
         Task<IEnumerable<Shelter>> GetAllSheltersAsync();
         Task<IEnumerable<Shelter>> GetNearbySheltersAsync(double userLat, double userLong, double radius);
+        Task<IEnumerable<Book>> GetBooksInShelterAsync(int shelterId);
     }
 }

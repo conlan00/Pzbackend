@@ -21,6 +21,14 @@ namespace Backend.Repositories.ShelterRepository
         {
             throw new NotImplementedException();
         }
+        public async Task<IEnumerable<Book>> GetBooksInShelterAsync(int shelterId)
+        {
+            return await _libraryContext.BookShelters
+                .Where(bs => bs.ShelterId == shelterId)
+                .Include(bs => bs.Book)
+                .Select(bs => bs.Book)
+                .ToListAsync();
+        }
     }
 
 

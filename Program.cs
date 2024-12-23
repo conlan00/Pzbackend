@@ -38,6 +38,11 @@ builder.Services.AddDbContext<LibraryContext>(options => {
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+builder.Services.AddScoped<IShelterService, ShelterService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 builder.Logging.ClearProviders(); // Wyczyœæ domyœlnych dostawców logów
 builder.Logging.AddConsole();     // Dodaj logowanie do konsoli
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
@@ -122,14 +127,7 @@ builder.Services.AddSwaggerGen(options =>
 
 
 
-builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
-builder.Services.AddScoped<IShelterService, ShelterService>();
-builder.Services.AddScoped<IUserService, UserService>();
 
-
-
-
-builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");
