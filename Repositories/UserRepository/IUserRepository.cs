@@ -4,6 +4,8 @@ namespace Backend.Repositories.UserRepository
 {
     public interface IUserRepository
     {
-        Task<User?> Login();
+        Task<int> Register(User user);
+        Task<int> GetLoyaltyPoints(int userId);
+        
     }
 }

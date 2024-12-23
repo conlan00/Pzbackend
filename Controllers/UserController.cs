@@ -1,5 +1,7 @@
 ﻿using Backend.Models;
+using Backend.Repositories.BookRepository;
 using Backend.Repositories.UserRepository;
+using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,67 +14,72 @@ namespace Backend.Controllers
     {
 
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        private readonly IBookRepository _bookRepository;
+        public UserController(IUserRepository userRepository, IBookRepository bookRepository)
         {
             _userRepository = userRepository;
+            _bookRepository = bookRepository;
         }
-        /*  private static readonly string[] RentalSummaries = new[]
-     {
-          "Book 1", "Book 2", "Book 3", "Book 4", "Book 5"
-      };
-
-          private static readonly List<User> Users = new List<User>
-      {
-          new User { Name = "admin", Token = "password123" }
-      };
-
-          [HttpGet("rentals")]
-          public IEnumerable<string> GetRentals()
-          {
-              return RentalSummaries;
-          }
-
-          [HttpGet("loyalty-points")]
-          public int GetLoyaltyPoints()
-          {
-              return 150; // Example static points
-          }
-
-          [HttpGet("favorite-books")]
-          public IEnumerable<string> GetFavoriteBooks()
-          {
-              return new[] { "Favorite Book 1", "Favorite Book 2" };
-          }
-
-          [HttpPost("loyalty-points/add")]
-          public IActionResult AddLoyaltyPoints()
-          {
-              return Ok(new { Message = "80 loyalty points added!" });
-          }
-
-          [HttpPost("register")]
-          public IActionResult Register([FromBody] User user)
-          {
-              if (Users.Any(u => u.Name == user.Name))
-              {
-                  return BadRequest(new { Message = "Username already exists." });
-              }
-
-              Users.Add(user);  
-              return Ok(new { Message = "User registered successfully!" });
-          }
-  */
+       
         //[Authorize]
-        [HttpPost("login")]
-        public async Task<ActionResult<User>>Login()
+        [HttpPost("register")]
+        public async Task<ActionResult>Register(User user)
         {
-            var Data = await _userRepository.Login();
-            return Ok(Data);
+            var registeredUser = await _userRepository.Register(user);
+            if (registeredUser!=0)
+            {
+                return Ok(new
+                {id = registeredUser});
+            }
+            else
+            {
+                return BadRequest("Uzytkownik istnieje w bazie");
+            }
+            
         }
-/*
-        private string GenerateToken(string username)
+        [HttpGet("borrows")]
+        public async Task<ActionResult> Borrows(int idUser)
         {
-            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{DateTime.Now}"));
-        }*/
+            var books = await _bookRepository.GetBooksByUserIdAsync(idUser);
+            if (books.Count!=0)
+            {       
+                return Ok(books);
+            }
+            else
+            {
+                return BadRequest("Nie wypożyczyłeś żadnych książek");
+            }
+
+        }
+        [HttpGet("loyalty-points")]
+        public async Task<ActionResult> GetLoyaltyPoints(int idUser)
+        {
+            var points = await _userRepository.GetLoyaltyPoints(idUser);
+           if ( points== -1)
+            {
+                return BadRequest("Uzytkownik nie istnieje w bazie");
+            }
+            else
+            {
+                return Ok(new
+                {
+                    points = points
+                });
+            }
+        }
+        [HttpGet("favourite-books")]
+        public async Task<ActionResult> GetFavouriteBooks(int idUser)
+        {
+            var favouriteBooks = await _bookRepository.GetFavouriteBooksByUserIdAsync(idUser);
+            if (favouriteBooks.Count != 0)
+            {
+                return Ok(favouriteBooks);
+            }
+            else
+            {
+                return BadRequest("Nie polubiłeś żadnych książek");
+            }
+        }
+
     }
 }

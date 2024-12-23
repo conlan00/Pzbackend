@@ -1,6 +1,7 @@
 using Backend.Models;
+using Backend.Repositories.BookRepository;
 using Backend.Repositories.UserRepository;
-
+using Backend.Services.BookService;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,14 +28,17 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<LibraryContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection2"));
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
 builder.Logging.ClearProviders(); // Wyczyœæ domyœlnych dostawców logów
 builder.Logging.AddConsole();     // Dodaj logowanie do konsoli
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
-//var firebaseApp=null;
+
 
 /*    var firebaseApp= FirebaseApp.Create(new AppOptions
     {
@@ -83,41 +87,7 @@ builder.Services.AddAuthentication()
     });
 */
 
-/*
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(opt =>
-        {
-            opt.Authority = "https://securetoken.google.com/pz-auth";
-            opt.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = false,
-                ValidIssuer = "https://securetoken.google.com/pz-auth",
-                ValidAudience = "pz-auth"
-            };
 
-            opt.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    Console.WriteLine($"B³¹d uwierzytelniania: {context.Exception.Message}");
-                    return Task.CompletedTask;
-                },
-                OnTokenValidated = context =>
-                {
-                    Console.WriteLine("Token poprawnie zweryfikowany.");
-                    return Task.CompletedTask;
-                },
-                OnChallenge = context =>
-                {
-                    Console.WriteLine($"Wyzwanie JWT: {context.ErrorDescription}");
-                    return Task.CompletedTask;
-                }
-            };
-        });
-
-builder.Services.AddAuthorization();*/
 
 
 builder.Services.AddSwaggerGen(options =>
@@ -143,6 +113,7 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
 });
 
 

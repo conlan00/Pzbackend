@@ -12,6 +12,7 @@
     <PackageReference Include="Clerk.Net.DependencyInjection" Version="1.8.0" />
     <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -23,10 +24,8 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="Repositories\BookRepository\" />
     <Folder Include="Repositories\BoothRepository\" />
     <Folder Include="Repositories\RenatalRepository\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
