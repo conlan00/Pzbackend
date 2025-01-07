@@ -56,6 +56,20 @@ namespace Backend.Controllers
             }
             
         }
+        [HttpGet("login")]
+        public async Task<ActionResult> Login(string name)
+        {
+            var idUser = await _userRepository.GetUserIdByNameAsync(name);
+            if (idUser!=null)
+            {
+                return Ok(new
+                { id = idUser });
+            }
+            else
+            {
+                return BadRequest("Uzytkownik nie istnieje");
+            }
+        }
         [HttpGet("borrows")]
         public async Task<ActionResult> Borrows(int idUser)
         {

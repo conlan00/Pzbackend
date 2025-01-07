@@ -1,6 +1,6 @@
 ﻿using Backend.DTO;
 using Backend.Models;
-//using Clerk.Net.Client.Models;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +46,12 @@ namespace Backend.Repositories.UserRepository
 
             return user.Points;
         }
-    
 
+        public async Task<int?> GetUserIdByNameAsync(string name)
+        {
+            var userExist = await _libraryContext.Users.FirstOrDefaultAsync(u => u.Name == name);
+            return userExist != null ? userExist.Id : null;
+        }
         private async Task<bool> checkUserIfExist(int userId)
         {
             var userExist = await _libraryContext.Users.FindAsync(userId);
