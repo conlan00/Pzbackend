@@ -16,28 +16,31 @@ namespace Backend.Controllers
             _shelterRepository = shelterRepositorsy;
         }
 
-        [HttpGet("books-booth/{id}")]
-        public async Task<IActionResult> GetBooksInShelter(int id)
+    [HttpGet("books-booth/{id}")]
+    public async Task<IActionResult> GetBooksInShelter(int id)
+    {
+        var books = await _shelterRepository.GetBooksInShelterAsync(id);
+    
+        if (!books.Any())
         {
-            var books = await _shelterRepository.GetBooksInShelterAsync(id);
-
-            if (!books.Any())
-            {
-                return NotFound(new { Message = $"Nie znaleziono żadnej książki o ID {id}" });
-            }
-
-            return Ok(new
-            {
-                ShelterId = id,
-                Books = books.Select(b => new
-                {
-                    b.Id,
-                    b.Title,
-                    b.Author,
-                    b.Description
-                })
-            });
+            return NotFound(new { Message = $"Nie znaleziono żadnej książki w schronisku o ID {id}" });
         }
+    
+        return Ok(new
+        {
+            ShelterId = id,
+            Books = books.Select(b => new
+            {
+                b.Id,
+                b.Title,
+                b.Author,
+                b.Description,
+                b.Cover, // URL okładki książki
+                Category = b.Category.CategoryName // Nazwa kategorii książki
+            })
+        });
+    }
+
 
     }
 }

@@ -24,11 +24,13 @@ namespace Backend.Repositories.ShelterRepository
         public async Task<IEnumerable<Book>> GetBooksInShelterAsync(int shelterId)
         {
             return await _libraryContext.BookShelters
-                .Where(bs => bs.ShelterId == shelterId)
-                .Include(bs => bs.Book)
+                .Where(bs => bs.ShelterId == shelterId) 
+                .Include(bs => bs.Book) 
+                    .ThenInclude(b => b.Category) 
                 .Select(bs => bs.Book)
                 .ToListAsync();
         }
+
     }
 
 
