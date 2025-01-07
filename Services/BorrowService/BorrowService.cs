@@ -1,5 +1,3 @@
-using Backend.Repositories.BorrowRepository;
-
 public class BorrowService : IBorrowService
 {
     private readonly IBorrowRepository _borrowRepository;

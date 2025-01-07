@@ -13,6 +13,8 @@ namespace Backend.Repositories.BookRepository
             _libraryContext = libraryContext;
         }
 
+
+
         public async Task<List<BookDto>> GetBooksByUserIdAsync(int userId)
         {
             if (await checkUserIfExist(userId))
@@ -150,6 +152,25 @@ namespace Backend.Repositories.BookRepository
         public async Task<Book?> GetBookByIdAsync(int id)
         {
             return await _libraryContext.Books.FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+
+
+        public async Task<IEnumerable<Book>> GetBooksByShelterAndCategoriesAsync(int shelterId, List<int>? categoryIds = null)
+        {
+            // Pobierz książki w danej budce
+            var query = _libraryContext.BookShelters
+                .Where(bs => bs.ShelterId == shelterId)
+                .Include(bs => bs.Book)
+                .Select(bs => bs.Book);
+
+            // Filtruj po kategoriach, jeśli są podane
+            if (categoryIds != null && categoryIds.Any())
+            {
+                query = query.Where(book => categoryIds.Contains(book.CategoryId));
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

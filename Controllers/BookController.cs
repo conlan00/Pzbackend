@@ -84,16 +84,37 @@ namespace Backend.Controllers
             }
 
             // Przedłuż datę zwrotu
-            borrow.ReturnTime = borrow.ReturnTime?.AddDays(additionalDays);
+            borrow.EndTime = borrow.EndTime.AddDays(additionalDays);
 
             // Zapisz zmiany
             await _libraryContext.SaveChangesAsync();
 
             return Ok(new
             {
-                Message = $"Borrow period extended by {additionalDays} days.",
-                NewReturnTime = borrow.ReturnTime
+               
+                NewReturnTime = borrow.EndTime
             });
+        }
+
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterBooks([FromQuery] int shelterId, [FromQuery] List<int>? categoryIds = null)
+        {
+            var books = await _bookService.GetFilteredBooksAsync(shelterId, categoryIds);
+
+            if (!books.Any())
+            {
+                return NotFound(new { Message = "No books found for the given criteria." });
+            }
+
+            return Ok(books.Select(book => new
+            {
+                book.Id,
+                book.Title,
+                book.Author,
+                book.Cover,
+                CategoryId = book.CategoryId
+            }));
         }
     }
 }
