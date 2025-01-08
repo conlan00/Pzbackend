@@ -15,7 +15,7 @@ namespace Backend.Repositories.BookRepository
 
 
 
-        public async Task<List<BookDto>> GetBooksByUserIdAsync(int userId)
+        public async Task<List<BookDto>> GetHistoryBorrowsBooksByUserIdAsync(int userId)
         {
             if (await checkUserIfExist(userId))
             {
@@ -40,9 +40,10 @@ namespace Backend.Repositories.BookRepository
                  bcb.book.Description,
                  bcb.book.Cover,
                  bcb.category.CategoryName,
-                 bcb.borrow.UserId
+                 bcb.borrow.UserId,
+                 bcb.borrow.ReturnTime
              })
-         .Where(result => result.UserId == userId)
+         .Where(result => result.UserId == userId && result.ReturnTime != null)
          .ToListAsync();
 
                 var bookDtos = books.Select(b => new BookDto
@@ -61,6 +62,62 @@ namespace Backend.Repositories.BookRepository
             return new List<BookDto>();
 
         }
+
+        public async Task<List<BookDtoDays>> GetActualBorrowBooksByUserIdAsync(int userId)
+        {
+            if (await checkUserIfExist(userId))
+            {
+                    var books = await _libraryContext.Books
+             .Join(_libraryContext.Categories,
+                 book => book.CategoryId,
+                 category => category.Id,
+                 (book, category) => new { book, category })
+             .Join(_libraryContext.Borrows,
+                 bc => bc.book.Id,
+                 borrow => borrow.BookId,
+                 (bc, borrow) => new { bc.book, bc.category, borrow })
+             .Join(_libraryContext.Users,
+                 bcb => bcb.borrow.UserId,
+                 user => user.Id,
+                 (bcb, user) => new
+                 {
+                     bcb.book.Id,
+                     bcb.book.Title,
+                     bcb.book.Publisher,
+                     bcb.book.Author,
+                     bcb.book.Description,
+                     bcb.book.Cover,
+                     bcb.category.CategoryName,
+                     bcb.borrow.UserId,
+                     bcb.borrow.BeginDate,
+                     bcb.borrow.EndTime,
+                     bcb.borrow.ReturnTime
+                 })
+             .Where(result => result.UserId == userId && result.ReturnTime == null)
+             .ToListAsync();
+                
+
+                    var bookDtos = books.Select(b => new BookDtoDays
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        Publisher = b.Publisher,
+                        Author = b.Author,
+                        Description = b.Description,
+                        Cover = b.Cover,
+                        CategoryName = b.CategoryName,
+                        Days=(int)(b.EndTime-DateTime.UtcNow).TotalDays
+                    }).ToList();
+
+                    return bookDtos;
+            }
+            return new List<BookDtoDays>();
+
+        }
+
+
+
+
         public async Task<List<BookDto>> GetFavouriteBooksByUserIdAsync(int userId)
         {
             if (await checkUserIfExist(userId))
@@ -109,6 +166,11 @@ namespace Backend.Repositories.BookRepository
             return new List<BookDto>();
 
         }
+
+
+
+
+
         public async Task<Borrow?> returnBorrow(int userId, int bookId)
         {
             var borrow = await _libraryContext.Borrows.FirstOrDefaultAsync(x => x.BookId == bookId && x.UserId == userId);

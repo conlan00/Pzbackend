@@ -70,17 +70,31 @@ namespace Backend.Controllers
                 return BadRequest("Uzytkownik nie istnieje");
             }
         }
-        [HttpGet("borrows")]
+        [HttpGet("borrows-history")]
         public async Task<ActionResult> Borrows(int idUser)
         {
-            var books = await _bookRepository.GetBooksByUserIdAsync(idUser);
+            var books = await _bookRepository.GetHistoryBorrowsBooksByUserIdAsync(idUser);
             if (books.Count!=0)
             {       
                 return Ok(books);
             }
             else
             {
-                return BadRequest("Nie wypożyczyłeś żadnych książek");
+                return BadRequest("Nie masz zadnych ksiazek w historii wypozyczen");
+            }
+
+        }
+        [HttpGet("borrows-time")]
+        public async Task<ActionResult> BorrowsTime(int idUser)
+        {
+            var books = await _bookRepository.GetActualBorrowBooksByUserIdAsync(idUser);
+            if (books.Count != 0)
+            {
+                return Ok(books);
+            }
+            else
+            {
+                return BadRequest("Nie masz zadnych aktualnie wypozyczonych ksiazek");
             }
 
         }

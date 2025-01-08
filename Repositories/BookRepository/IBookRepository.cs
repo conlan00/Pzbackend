@@ -6,7 +6,7 @@ namespace Backend.Repositories.BookRepository
 {
 public interface IBookRepository
 {
-        Task<List<BookDto>> GetBooksByUserIdAsync(int userId);
+        Task<List<BookDto>> GetHistoryBorrowsBooksByUserIdAsync(int userId);
         Task<List<BookDto>> GetFavouriteBooksByUserIdAsync(int userId);
         Task<Borrow> returnBorrow(int userId, int bookId);
         Task<bool> setReturnTime(Borrow borrow,DateTime time);
@@ -14,6 +14,6 @@ public interface IBookRepository
         Task<Book?> GetBookByIdAsync(int id);
         Task<IEnumerable<Book>> GetBooksByShelterAndCategoriesAsync(int shelterId, List<int>? categoryIds = null);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
-
+        Task<List<BookDtoDays>> GetActualBorrowBooksByUserIdAsync(int userId);
     }
 }
