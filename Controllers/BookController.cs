@@ -27,9 +27,9 @@ namespace Backend.Controllers
         }
 
         [HttpPatch("return")]
-        public async Task<ActionResult> ReturnBook(int userId, int bookId)
+        public async Task<ActionResult> ReturnBook(int userId, int bookId, int ShelterId)
         {
-            var borrows = await _bookService.ReturnBook(userId, bookId);
+            var borrows = await _bookService.ReturnBook(userId, bookId, ShelterId);
             return Ok(borrows);
         }
 

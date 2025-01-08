@@ -15,5 +15,7 @@ public interface IBookRepository
         Task<IEnumerable<Book>> GetBooksByShelterAndCategoriesAsync(int shelterId, List<int>? categoryIds = null);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<List<BookDtoDays>> GetActualBorrowBooksByUserIdAsync(int userId);
+        Task<bool> setShelter(Borrow borrow, int idShelter);
+        Task<bool> addBookShelter(int bookId, int shelterId);
     }
 }

@@ -14,7 +14,7 @@ public class BookService : IBookService
             _libraryContext = libraryContext;
     }
 
-        public async Task<bool> ReturnBook(int userId, int bookId)
+        public async Task<bool> ReturnBook(int userId, int bookId, int ShelterId)
     {
             using var transaction = await _libraryContext.Database.BeginTransactionAsync();
             try
@@ -24,7 +24,12 @@ public class BookService : IBookService
                 {
                     if (borrow.ReturnTime == null)
                     {
+
                         await _bookRepository.setReturnTime(borrow, DateTime.UtcNow);
+                        await _bookRepository.setShelter(borrow, ShelterId);
+                        // dodac wiersz do book shelter
+                        await _bookRepository.addBookShelter(bookId, ShelterId);
+
                         int returnDays = (int)(DateTime.UtcNow - borrow.BeginDate).TotalDays;
                         int returnDeadlineInDays = (int)(borrow.EndTime - borrow.BeginDate).TotalDays;
 

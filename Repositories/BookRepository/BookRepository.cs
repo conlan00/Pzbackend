@@ -189,6 +189,24 @@ namespace Backend.Repositories.BookRepository
             await _libraryContext.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<bool> setShelter(Borrow borrow, int idShelter)
+        {
+
+            if (borrow == null)
+            {
+                return false;
+            }
+
+            borrow.ShelterId2 = idShelter;
+
+            await _libraryContext.SaveChangesAsync();
+            return true;
+        }
+
+
+
         public async Task<bool> setLoyaltyPoints(int points, int userId)
         {
             var userExist = await _libraryContext.Users.FindAsync(userId);
@@ -204,6 +222,17 @@ namespace Backend.Repositories.BookRepository
             }
         }
 
+        public async Task<bool> addBookShelter(int bookId, int shelterId)
+        {
+            var newBookShelter = new BookShelter
+            {
+                BookId = bookId,
+                ShelterId = shelterId
+            };
+            _libraryContext.Add(newBookShelter);
+            await _libraryContext.SaveChangesAsync();
+            return true;
+        }
 
         private async Task<bool> checkUserIfExist(int userId)
         {
