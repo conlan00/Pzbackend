@@ -172,5 +172,18 @@ namespace Backend.Repositories.BookRepository
 
             return await query.ToListAsync();
         }
+
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        {
+            return await _libraryContext.Categories
+                .Select(c => new Category
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName
+                })
+                .ToListAsync();
+        }
+
+
     }
 }
