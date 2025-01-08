@@ -114,7 +114,7 @@ namespace Backend.Controllers
                 });
             }
         }
-        [HttpGet("favourite-books")]
+/*        [HttpGet("favourite-books")]
         public async Task<ActionResult> GetFavouriteBooks(int idUser)
         {
             var favouriteBooks = await _bookRepository.GetFavouriteBooksByUserIdAsync(idUser);
@@ -126,7 +126,7 @@ namespace Backend.Controllers
             {
                 return BadRequest("Nie polubiłeś żadnych książek");
             }
-        }
+        }*/
 
         [HttpPost("{userId}/return-book/{bookId}")]
         public async Task<IActionResult> ReturnBook(int userId, int bookId)

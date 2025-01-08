@@ -25,13 +25,13 @@ namespace Backend.Controllers
             _bookService = bookService;
             _libraryContext = libraryContext;
         }
-
+/*
         [HttpPatch("return")]
         public async Task<ActionResult> ReturnBook(int userId, int bookId, int ShelterId)
         {
             var borrows = await _bookService.ReturnBook(userId, bookId, ShelterId);
             return Ok(borrows);
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById(int id)
@@ -136,7 +136,7 @@ namespace Backend.Controllers
                 c.CategoryName
             }));
         }
-
+/*
     [HttpPost("add-book")]
     public async Task<IActionResult> AddBook([FromBody] AddBookRequest request)
     {
@@ -224,6 +224,6 @@ namespace Backend.Controllers
             BookId = newBook.Id,
             Category = categoryName
         });
-    }
+    }*/
     }
 }
