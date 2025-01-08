@@ -21,4 +21,10 @@ public class BorrowRepository : IBorrowRepository
         _context.Borrows.Remove(borrow);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> ExtendBorrowAsync(Borrow borrow, int additionalDays)
+    {
+        borrow.EndTime = borrow.EndTime.AddDays(additionalDays);
+        return await _context.SaveChangesAsync() > 0;
+    }
 }

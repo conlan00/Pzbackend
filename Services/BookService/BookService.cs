@@ -71,6 +71,12 @@ public class BookService : IBookService
                 Cover = book.Cover
             };
         }
+
+
+        public async Task<IEnumerable<Book>> GetFilteredBooksAsync(int shelterId, List<int>? categoryIds = null)
+        {
+            return await _bookRepository.GetBooksByShelterAndCategoriesAsync(shelterId, categoryIds);
+        }
     }
     
 }
