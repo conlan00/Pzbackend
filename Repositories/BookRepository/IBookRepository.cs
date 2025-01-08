@@ -13,5 +13,7 @@ public interface IBookRepository
         Task<bool> setLoyaltyPoints(int points,int userId);
         Task<Book?> GetBookByIdAsync(int id);
         Task<IEnumerable<Book>> GetBooksByShelterAndCategoriesAsync(int shelterId, List<int>? categoryIds = null);
+        Task<IEnumerable<Category>> GetAllCategoriesAsync();
+
     }
 }
