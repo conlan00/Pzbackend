@@ -1,8 +1,11 @@
 using Backend.Models;
 using Backend.Repositories.BookRepository;
+using Backend.Repositories.BorrowRepository;
 using Backend.Repositories.ShelterRepository;
 using Backend.Repositories.UserRepository;
+using Backend.Services.UserService;
 using Backend.Services.BookService;
+using Backend.Services.BorrowService;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,7 +36,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<LibraryContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection1"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection2"));
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
@@ -41,9 +44,11 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
 builder.Services.AddScoped<IShelterService, ShelterService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBorrowService, BorrowService>();
+
 
 builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
-builder.Logging.ClearProviders(); // Wyczyœæ domyœlnych dostawców logów
+builder.Logging.ClearProviders(); // Wyczyï¿½ï¿½ domyï¿½lnych dostawcï¿½w logï¿½w
 builder.Logging.AddConsole();     // Dodaj logowanie do konsoli
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
@@ -66,7 +71,7 @@ builder.Services.AddAuthentication()
             OnAuthenticationFailed = context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                logger.LogError($"B³¹d uwierzytelniania: {context.Exception.Message}");
+                logger.LogError($"Bï¿½ï¿½d uwierzytelniania: {context.Exception.Message}");
                 return Task.CompletedTask;
             },
 
@@ -79,7 +84,7 @@ builder.Services.AddAuthentication()
                     logger.LogInformation("Token poprawnie zweryfikowany.");
 
                     // Dodatkowa logika walidacji tokenu
-                    // Mo¿esz sprawdziæ rêcznie podpis i inne elementy tokenu
+                    // Moï¿½esz sprawdziï¿½ rï¿½cznie podpis i inne elementy tokenu
                 }
                 return Task.CompletedTask;
             },

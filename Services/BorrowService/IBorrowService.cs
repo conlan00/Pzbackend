@@ -1,4 +1,12 @@
-public interface IBorrowService
+using Backend.Models;
+
+namespace Backend.Services.BorrowService
 {
-    Task<bool> ExtendBorrowAsync(int userId, int bookId, int additionalDays);
+    public interface IBorrowService
+    {
+        Task<Borrow> AddBorrowAsync(Borrow borrow);
+        Task<bool> ExtendBorrowAsync(int borrowId, int additionalDays);
+        Task<Borrow?> GetBorrowRecordAsync(int userId, int bookId);
+        Task<bool> DeleteBorrowRecordAsync(Borrow borrow);
+    }
 }

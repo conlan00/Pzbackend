@@ -1,8 +1,12 @@
 using Backend.Models;
 
-public interface IBorrowRepository
+namespace Backend.Repositories.BorrowRepository
 {
-    Task<Borrow?> GetBorrowRecordAsync(int userId, int bookId);
-    Task DeleteBorrowRecordAsync(Borrow borrow);
-    Task<bool> ExtendBorrowAsync(Borrow borrow, int additionalDays);
+    public interface IBorrowRepository
+    {
+        Task<Borrow> AddBorrowAsync(Borrow borrow); // Dodaj tę metodę
+        Task<Borrow?> GetBorrowRecordAsync(int userId, int bookId);
+        Task<bool> DeleteBorrowRecordAsync(Borrow borrow);
+        Task<bool> ExtendBorrowAsync(Borrow borrow, int additionalDays);
+    }
 }
