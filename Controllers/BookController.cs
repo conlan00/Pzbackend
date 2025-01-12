@@ -7,6 +7,7 @@ using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Backend.DTO;
 using System.Text.Json;
+using Backend.Services.UserService;
 
 
 namespace Backend.Controllers
