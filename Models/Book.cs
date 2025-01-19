@@ -19,11 +19,15 @@ public partial class Book
 
     public int CategoryId { get; set; }
 
-    public virtual ICollection<BookShelter> BookShelters { get; set; } = new List<BookShelter>();
+    public int? ShelterId { get; set; }
+
+    public virtual ICollection<BookArrival> BookArrivals { get; set; } = new List<BookArrival>();
 
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
 
     public virtual Category Category { get; set; } = null!;
 
     public virtual ICollection<LikedBook> LikedBooks { get; set; } = new List<LikedBook>();
+
+    public virtual Shelter? Shelter { get; set; }
 }

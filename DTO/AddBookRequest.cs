@@ -4,4 +4,5 @@ public class AddBookRequest
     public string Author { get; set; } = null!;
     public string Publisher { get; set; } = null!;
     public int ShelterId { get; set; }
+    public int userId { get; set; }
 }

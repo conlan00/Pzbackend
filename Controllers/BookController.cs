@@ -46,6 +46,15 @@ namespace Backend.Controllers
 
             return Ok(book);
         }
+        [HttpPost("give-like")]
+        public async Task<IActionResult> GiveLike(int userId, int bookId)
+        {
+            await _bookRepository.GiveLike(userId, bookId);
+            return Ok("Dodano polubienie");
+        }
+
+
+
 
         [HttpGet("user-books/{userId}")]
         public async Task<IActionResult> GetBooksByUser(int userId)
@@ -206,17 +215,17 @@ namespace Backend.Controllers
                 Cover = coverUrl,
                 CategoryId = category.Id // Przypisz ID kategorii
             };
-
-            _libraryContext.Books.Add(newBook);
-
-            // Powiąż książkę z budką
+            // !!!! Sprawdzić z triggerem numer 1 
+            var added =_libraryContext.Books.Add(newBook);
+            await _libraryContext.SaveChangesAsync();
+            /*// Powiąż książkę z budką
             var bookShelter = new BookShelter
             {
                 Book = newBook,
                 ShelterId = request.ShelterId
             };
-            _libraryContext.BookShelters.Add(bookShelter);
-
+            _libraryContext.BookShelters.Add(bookShelter);*/
+            await _bookRepository.addBookArrival(request.userId, added.Entity.Id, request.ShelterId);
             await _libraryContext.SaveChangesAsync();
 
             return Ok(new

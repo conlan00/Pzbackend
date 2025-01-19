@@ -17,15 +17,15 @@ public partial class Borrow
 
     public int BookId { get; set; }
 
-    public int ShelterId2 { get; set; }
+    public int? BorrowShelterId { get; set; }
 
-    public int? ShelterId { get; set; }
+    public int? ReturnShelterId { get; set; }
 
     public virtual Book Book { get; set; } = null!;
 
-    public virtual Shelter? Shelter { get; set; }
+    public virtual Shelter? BorrowShelter { get; set; }
 
-    public virtual Shelter ShelterId2Navigation { get; set; } = null!;
+    public virtual Shelter? ReturnShelter { get; set; }
 
     public virtual User User { get; set; } = null!;
 }

@@ -13,6 +13,8 @@ public partial class User
 
     public string Token { get; set; } = null!;
 
+    public virtual ICollection<BookArrival> BookArrivals { get; set; } = new List<BookArrival>();
+
     public virtual ICollection<Borrow> Borrows { get; set; } = new List<Borrow>();
 
     public virtual ICollection<LikedBook> LikedBooks { get; set; } = new List<LikedBook>();

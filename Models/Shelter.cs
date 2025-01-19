@@ -13,9 +13,11 @@ public partial class Shelter
 
     public float Lat { get; set; }
 
-    public virtual ICollection<BookShelter> BookShelters { get; set; } = new List<BookShelter>();
+    public virtual ICollection<BookArrival> BookArrivals { get; set; } = new List<BookArrival>();
 
-    public virtual ICollection<Borrow> BorrowShelterId2Navigations { get; set; } = new List<Borrow>();
+    public virtual ICollection<Book> Books { get; set; } = new List<Book>();
 
-    public virtual ICollection<Borrow> BorrowShelters { get; set; } = new List<Borrow>();
+    public virtual ICollection<Borrow> BorrowBorrowShelters { get; set; } = new List<Borrow>();
+
+    public virtual ICollection<Borrow> BorrowReturnShelters { get; set; } = new List<Borrow>();
 }

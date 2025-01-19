@@ -23,14 +23,14 @@ namespace Backend.Controllers
 
         [HttpPost("borrow")]
 public async Task<IActionResult> BorrowBook(int userId, int bookId, int shelterId)
-{
+{ //!!!!!!!!!!Sprawdzic z triggerem 2
     _logger.LogInformation("Processing borrow request: UserId={UserId}, BookId={BookId}, ShelterId={ShelterId}", userId, bookId, shelterId);
 
-    try
-    {
+  /*  try
+    {*/
         // Sprawdzenie, czy książka istnieje w danym Shelterze
-        var bookShelter = await _context.BookShelters
-            .FirstOrDefaultAsync(bs => bs.BookId == bookId && bs.ShelterId == shelterId);
+        var bookShelter = await _context.Books
+            .FirstOrDefaultAsync(bs => bs.Id == bookId && bs.ShelterId == shelterId);
 
         if (bookShelter == null)
         {
@@ -40,13 +40,15 @@ public async Task<IActionResult> BorrowBook(int userId, int bookId, int shelterI
 
         _logger.LogInformation("Book with ID {BookId} found in Shelter with ID {ShelterId}. Proceeding to remove from Shelter and borrow.", bookId, shelterId);
 
+
+
         // Tworzenie nowego rekordu Borrow
         var borrow = new Borrow
         {
             UserId = userId,
             BookId = bookId,
-            ShelterId = shelterId,
-            ShelterId2 = shelterId,
+/*            ShelterId = shelterId,
+            ShelterId2 = shelterId,*/
             
             BeginDate = DateTime.UtcNow,
             EndTime = DateTime.UtcNow.AddDays(14) // Wypożyczenie na 14 dni
@@ -55,19 +57,19 @@ public async Task<IActionResult> BorrowBook(int userId, int bookId, int shelterI
         _context.Borrows.Add(borrow);
 
         // Usunięcie rekordu z tabeli BookShelter
-        _context.BookShelters.Remove(bookShelter);
-        _logger.LogInformation("Book with ID {BookId} removed from Shelter with ID {ShelterId}.", bookId, shelterId);
+        //_context.BookShelters.Remove(bookShelter);
+        //_logger.LogInformation("Book with ID {BookId} removed from Shelter with ID {ShelterId}.", bookId, shelterId);
 
         // Zapis zmian w bazie
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Book successfully borrowed.", borrow });
-    }
+/*    }
     catch (Exception ex)
     {
         _logger.LogError(ex, "An error occurred while processing the borrowing request for UserId={UserId}, BookId={BookId}, ShelterId={ShelterId}.", userId, bookId, shelterId);
         return StatusCode(500, "An error occurred while processing your request.");
-    }
+    }*/
 }
 
 

@@ -173,10 +173,10 @@ namespace Backend.Repositories.BookRepository
 
         public async Task<Borrow?> returnBorrow(int userId, int bookId)
         {
-            var borrow = await _libraryContext.Borrows.FirstOrDefaultAsync(x => x.BookId == bookId && x.UserId == userId);
+            var borrow = await _libraryContext.Borrows.FirstOrDefaultAsync(x => x.BookId == bookId && x.UserId == userId) ?? null;
             return borrow;
         }
-        public async Task<bool> setReturnTime(Borrow borrow, DateTime time)
+        public async Task<bool> setReturnTime(Borrow borrow, DateTime time, int ShelterId)
         {
 
             if (borrow == null)
@@ -185,13 +185,24 @@ namespace Backend.Repositories.BookRepository
             }
 
             borrow.ReturnTime = time;
-
+            borrow.ReturnShelterId = ShelterId;
             await _libraryContext.SaveChangesAsync();
             return true;
         }
-
-
-        public async Task<bool> setShelter(Borrow borrow, int idShelter)
+        public async Task<bool> addBookArrival(int userId, int bookId, int shelterID)
+        {
+            var newBookArrival = new BookArrival
+            {
+                DateTime = DateTime.UtcNow,
+                UserId = userId,
+                BookId = bookId,
+                ShelterId = shelterID
+            };
+            _libraryContext.Add(newBookArrival);
+            return true;
+        }
+       // public async Task<Book>
+/*        public async Task<bool> setShelter(Borrow borrow, int idShelter)
         {
 
             if (borrow == null)
@@ -203,7 +214,7 @@ namespace Backend.Repositories.BookRepository
 
             await _libraryContext.SaveChangesAsync();
             return true;
-        }
+        }*/
 
 
 
@@ -222,7 +233,7 @@ namespace Backend.Repositories.BookRepository
             }
         }
 
-        public async Task<bool> addBookShelter(int bookId, int shelterId)
+  /*      public async Task<bool> addBookShelter(int bookId, int shelterId)
         {
             var newBookShelter = new BookShelter
             {
@@ -232,7 +243,7 @@ namespace Backend.Repositories.BookRepository
             _libraryContext.Add(newBookShelter);
             await _libraryContext.SaveChangesAsync();
             return true;
-        }
+        }*/
 
         private async Task<bool> checkUserIfExist(int userId)
         {
@@ -245,15 +256,13 @@ namespace Backend.Repositories.BookRepository
             return await _libraryContext.Books.FirstOrDefaultAsync(b => b.Id == id);
         }
 
-
+        //!!!!!!! do sprawdzenia 
 
         public async Task<IEnumerable<Book>> GetBooksByShelterAndCategoriesAsync(int shelterId, List<int>? categoryIds = null)
         {
             // Pobierz książki w danej budce
-            var query = _libraryContext.BookShelters
-                .Where(bs => bs.ShelterId == shelterId)
-                .Include(bs => bs.Book)
-                .Select(bs => bs.Book);
+            var query = _libraryContext.Books
+                .Where(bs => bs.ShelterId == shelterId);
 
             // Filtruj po kategoriach, jeśli są podane
             if (categoryIds != null && categoryIds.Any())
@@ -274,7 +283,19 @@ namespace Backend.Repositories.BookRepository
                 })
                 .ToListAsync();
         }
+        public async Task<bool> GiveLike(int userId, int bookId)
+        {
+            var newLikedBook = new LikedBook
+            {
+                UserId = userId,
+                BookId = bookId
 
+            };
+
+            await _libraryContext.LikedBooks.AddAsync(newLikedBook);
+            await _libraryContext.SaveChangesAsync();
+            return true;
+        }
 
     }
 }

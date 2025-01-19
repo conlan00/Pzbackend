@@ -3,9 +3,13 @@ using System.Collections.Generic;
 
 namespace Backend.Models;
 
-public partial class BookShelter
+public partial class BookArrival
 {
     public int Id { get; set; }
+
+    public DateTime DateTime { get; set; }
+
+    public int UserId { get; set; }
 
     public int BookId { get; set; }
 
@@ -14,4 +18,6 @@ public partial class BookShelter
     public virtual Book Book { get; set; } = null!;
 
     public virtual Shelter Shelter { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

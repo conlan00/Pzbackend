@@ -17,7 +17,7 @@ public partial class LibraryContext : DbContext
 
     public virtual DbSet<Book> Books { get; set; }
 
-    public virtual DbSet<BookShelter> BookShelters { get; set; }
+    public virtual DbSet<BookArrival> BookArrivals { get; set; }
 
     public virtual DbSet<Borrow> Borrows { get; set; }
 
@@ -31,8 +31,8 @@ public partial class LibraryContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-/*    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=DbConnection2");*/
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=DbConnection2");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +56,7 @@ public partial class LibraryContext : DbContext
             entity.Property(e => e.Publisher)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.ShelterId).HasColumnName("Shelter_ID");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -64,42 +65,57 @@ public partial class LibraryContext : DbContext
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Book_Category_FK");
+
+            entity.HasOne(d => d.Shelter).WithMany(p => p.Books)
+                .HasForeignKey(d => d.ShelterId)
+                .HasConstraintName("Book_Shelter_FK");
         });
 
-        modelBuilder.Entity<BookShelter>(entity =>
+        modelBuilder.Entity<BookArrival>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("BookShelter_PK");
+            entity.HasKey(e => e.Id).HasName("BookArrival_PK");
 
-            entity.ToTable("BookShelter");
+            entity.ToTable("BookArrival", tb => tb.HasTrigger("T_AfterInsert_BookArrival"));
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.BookId).HasColumnName("Book_ID");
+            entity.Property(e => e.DateTime).HasColumnType("datetime");
             entity.Property(e => e.ShelterId).HasColumnName("Shelter_ID");
+            entity.Property(e => e.UserId).HasColumnName("User_ID");
 
-            entity.HasOne(d => d.Book).WithMany(p => p.BookShelters)
+            entity.HasOne(d => d.Book).WithMany(p => p.BookArrivals)
                 .HasForeignKey(d => d.BookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("BookShelter_Book_FK");
+                .HasConstraintName("BookArrival_Book_FK");
 
-            entity.HasOne(d => d.Shelter).WithMany(p => p.BookShelters)
+            entity.HasOne(d => d.Shelter).WithMany(p => p.BookArrivals)
                 .HasForeignKey(d => d.ShelterId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("BookShelter_Shelter_FK");
+                .HasConstraintName("BookArrival_Shelter_FK");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BookArrivals)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("BookArrival_User_FK");
         });
 
         modelBuilder.Entity<Borrow>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Borrow_PK");
 
-            entity.ToTable("Borrow");
+            entity.ToTable("Borrow", tb =>
+                {
+                    tb.HasTrigger("T_AfterInsert_Borrow");
+                    tb.HasTrigger("T_AfterUpdate_ReturnShelterID");
+                });
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.BeginDate).HasColumnType("datetime");
             entity.Property(e => e.BookId).HasColumnName("Book_ID");
+            entity.Property(e => e.BorrowShelterId).HasColumnName("Borrow_Shelter_ID");
             entity.Property(e => e.EndTime).HasColumnType("datetime");
+            entity.Property(e => e.ReturnShelterId).HasColumnName("Return_Shelter_ID");
             entity.Property(e => e.ReturnTime).HasColumnType("datetime");
-            entity.Property(e => e.ShelterId).HasColumnName("Shelter_ID");
-            entity.Property(e => e.ShelterId2).HasColumnName("Shelter_ID2");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
             entity.HasOne(d => d.Book).WithMany(p => p.Borrows)
@@ -107,14 +123,13 @@ public partial class LibraryContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Borrow_Book_FK");
 
-            entity.HasOne(d => d.Shelter).WithMany(p => p.BorrowShelters)
-                .HasForeignKey(d => d.ShelterId)
+            entity.HasOne(d => d.BorrowShelter).WithMany(p => p.BorrowBorrowShelters)
+                .HasForeignKey(d => d.BorrowShelterId)
                 .HasConstraintName("Borrow_Shelter_FK");
 
-            entity.HasOne(d => d.ShelterId2Navigation).WithMany(p => p.BorrowShelterId2Navigations)
-                .HasForeignKey(d => d.ShelterId2)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Borrow_Shelter_FKv2");
+            entity.HasOne(d => d.ReturnShelter).WithMany(p => p.BorrowReturnShelters)
+                .HasForeignKey(d => d.ReturnShelterId)
+                .HasConstraintName("Return_Shelter_FK");
 
             entity.HasOne(d => d.User).WithMany(p => p.Borrows)
                 .HasForeignKey(d => d.UserId)
