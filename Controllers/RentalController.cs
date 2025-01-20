@@ -21,55 +21,34 @@ namespace Backend.Controllers
             _logger = logger;
         }
 
-        [HttpPost("borrow")]
+       [HttpPost("borrow")]
 public async Task<IActionResult> BorrowBook(int userId, int bookId, int shelterId)
-{ //!!!!!!!!!!Sprawdzic z triggerem 2
+{
     _logger.LogInformation("Processing borrow request: UserId={UserId}, BookId={BookId}, ShelterId={ShelterId}", userId, bookId, shelterId);
 
-  /*  try
-    {*/
-        // Sprawdzenie, czy książka istnieje w danym Shelterze
-        var bookShelter = await _context.Books
-            .FirstOrDefaultAsync(bs => bs.Id == bookId && bs.ShelterId == shelterId);
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
+        var borrow = await _borrowService.BorrowBookAsync(userId, bookId, shelterId);
 
-        if (bookShelter == null)
-        {
-            _logger.LogWarning("Book with ID {BookId} is not available in Shelter with ID {ShelterId}.", bookId, shelterId);
-            return NotFound("The specified book is not available in the given shelter.");
-        }
+        // Zatwierdzenie transakcji
+        await transaction.CommitAsync();
 
-        _logger.LogInformation("Book with ID {BookId} found in Shelter with ID {ShelterId}. Proceeding to remove from Shelter and borrow.", bookId, shelterId);
-
-
-
-        // Tworzenie nowego rekordu Borrow
-        var borrow = new Borrow
-        {
-            UserId = userId,
-            BookId = bookId,
-/*            ShelterId = shelterId,
-            ShelterId2 = shelterId,*/
-            
-            BeginDate = DateTime.UtcNow,
-            EndTime = DateTime.UtcNow.AddDays(14) // Wypożyczenie na 14 dni
-        };
-
-        _context.Borrows.Add(borrow);
-
-        // Usunięcie rekordu z tabeli BookShelter
-        //_context.BookShelters.Remove(bookShelter);
-        //_logger.LogInformation("Book with ID {BookId} removed from Shelter with ID {ShelterId}.", bookId, shelterId);
-
-        // Zapis zmian w bazie
-        await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Borrow transaction completed successfully for UserId={UserId}, BookId={BookId}, ShelterId={ShelterId}", userId, bookId, shelterId);
         return Ok(new { message = "Book successfully borrowed.", borrow });
-/*    }
+    }
+    catch (KeyNotFoundException ex)
+    {
+        _logger.LogWarning(ex.Message);
+        await transaction.RollbackAsync();
+        return NotFound(ex.Message);
+    }
     catch (Exception ex)
     {
         _logger.LogError(ex, "An error occurred while processing the borrowing request for UserId={UserId}, BookId={BookId}, ShelterId={ShelterId}.", userId, bookId, shelterId);
+        await transaction.RollbackAsync();
         return StatusCode(500, "An error occurred while processing your request.");
-    }*/
+    }
 }
 
 

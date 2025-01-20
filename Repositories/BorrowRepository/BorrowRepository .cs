@@ -36,5 +36,17 @@ namespace Backend.Repositories.BorrowRepository
             _context.Borrows.Remove(borrow);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<Book?> GetBookInShelterAsync(int bookId, int shelterId)
+        {
+            return await _context.Books
+                .FirstOrDefaultAsync(book => book.Id == bookId && book.ShelterId == shelterId);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
