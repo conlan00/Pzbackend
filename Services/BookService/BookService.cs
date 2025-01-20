@@ -2,6 +2,9 @@
 using Backend.Repositories.BookRepository;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Backend.Repositories;
+using Backend.Repositories.PointsRepository;
+using Backend.Backend.Repositories.PointsRepository;
 
 namespace Backend.Services.BookService
 {
@@ -9,16 +12,18 @@ public class BookService : IBookService
 {
     private readonly IBookRepository _bookRepository;
         private readonly LibraryContext _libraryContext;
+        private readonly IPointsRepository _pointsRepository;
 
-        public BookService(IBookRepository bookRepository, LibraryContext libraryContext)
+        public BookService(IBookRepository bookRepository, LibraryContext libraryContext, IPointsRepository pointsRepository)
     {
         _bookRepository = bookRepository;
             _libraryContext = libraryContext;
+            _pointsRepository = pointsRepository;
     }
 
-        public async Task<bool> ReturnBook(int userId, int bookId, int ShelterId)
+        public async Task<bool> ReturnBook(int userId, int bookId, int shelterId)
         {
-            // using trigger -->T_AfterUpdate_Borrow
+            // Using transaction to ensure atomicity
             using var transaction = await _libraryContext.Database.BeginTransactionAsync();
             try
             {
@@ -27,40 +32,54 @@ public class BookService : IBookService
                 {
                     if (borrow.ReturnTime == null)
                     {
+                        // Set the return time and shelter
+                        await _bookRepository.setReturnTime(borrow, DateTime.UtcNow, shelterId);
 
-                        await _bookRepository.setReturnTime(borrow, DateTime.UtcNow,ShelterId);
-                        //await _bookRepository.setShelter(borrow, ShelterId);
-                        // dodac wiersz do book shelter
-                        //await _bookRepository.addBookShelter(bookId, ShelterId);
-
+                        // Calculate return details
                         int returnDays = (int)(DateTime.UtcNow - borrow.BeginDate).TotalDays;
                         int returnDeadlineInDays = (int)(borrow.EndTime - borrow.BeginDate).TotalDays;
+                        int points = 0;
 
                         if (returnDays <= 7)
                         {
-                            await _bookRepository.setLoyaltyPoints(30, userId);
+                            points = 30;
+                            await _bookRepository.setLoyaltyPoints(points, userId);
                         }
                         else if (returnDays > returnDeadlineInDays)
                         {
                             var delayDays = returnDays - returnDeadlineInDays;
                             int firstWeekPenalty = Math.Min(delayDays, 7) * -5;
                             int additionalDaysPenalty = Math.Max(delayDays - 7, 0) * -15;
-                            await _bookRepository.setLoyaltyPoints((firstWeekPenalty + additionalDaysPenalty), userId);
+                            points = firstWeekPenalty + additionalDaysPenalty;
+                            await _bookRepository.setLoyaltyPoints(points, userId);
+                        }
+
+                        // Add a record to OperationHistory
+                        if (points != 0)
+                        {
+                            await _pointsRepository.addOperationHistory(new OperationHistory
+                            {
+                                UserId = userId,
+                                OperationDescription = points.ToString(), // Zapisz tylko liczbę punktów
+                                DateTime = DateTime.UtcNow
+                            });
                         }
 
                     }
-                    await transaction.CommitAsync();
 
+                    await transaction.CommitAsync();
                     return true;
                 }
-            } catch (Exception ex)
-        {
+            }
+            catch (Exception)
+            {
                 await transaction.RollbackAsync();
                 throw;
             }
-            return false;
 
+            return false;
         }
+
         public async Task<BookDto2?> GetBookByIdAsync(int id)
         {
             // Pobierz książkę z repozytorium
