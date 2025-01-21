@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
+using Backend.Backend.Repositories.PointsRepository;
+using Backend.Repositories.PointsRepository;
+using Backend.Services.PointsService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,7 +52,8 @@ builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
 builder.Services.AddScoped<IShelterService, ShelterService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
-
+builder.Services.AddScoped<IPointsRepository, PointsRepository>();
+builder.Services.AddScoped<IPointsService, PointsService>();
 
 builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 builder.Logging.ClearProviders(); // Wyczy�� domy�lnych dostawc�w log�w

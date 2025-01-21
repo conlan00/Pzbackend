@@ -1,36 +1,57 @@
 using Backend.Models;
 using Backend.Repositories.UserRepository;
 using Backend.Repositories.BorrowRepository;
-
+using Backend.Repositories.PointsRepository;
+using Backend.Backend.Repositories.PointsRepository;
+using Backend.Backend.Repositories.PointsRepository;
 namespace Backend.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IBorrowRepository _borrowRepository;
-        public UserService(IUserRepository userRepository, IBorrowRepository borrowRepository)
+        private readonly IPointsRepository _pointsRepository;
+
+        public UserService(IUserRepository userRepository, IBorrowRepository borrowRepository, IPointsRepository pointsRepository)
         {
             _userRepository = userRepository;
             _borrowRepository = borrowRepository;
+            _pointsRepository = pointsRepository;
         }
-    
+
         public async Task<bool> AddPointsToUserAsync(int userId, int pointsToAdd)
         {
-            // Pobierz u�ytkownika o danym ID
+            // Pobierz użytkownika o danym ID
             var user = await _userRepository.GetUserByIdAsync(userId);
-    
+
             if (user == null)
             {
-                return false; // U�ytkownik nie istnieje
+                return false; // Użytkownik nie istnieje
             }
-    
+
             // Dodaj punkty
             user.Points += pointsToAdd;
-    
-            // Zapisz zmiany
-            return await _userRepository.UpdateUserAsync(user);
+
+            // Zapisz zmiany w użytkowniku
+            var updateResult = await _userRepository.UpdateUserAsync(user);
+
+            if (!updateResult)
+            {
+                return false; // Nie udało się zaktualizować użytkownika
+            }
+
+            // Dodaj rekord do OperationHistory
+            await _pointsRepository.addOperationHistory(new OperationHistory
+            {
+                UserId = userId,
+                OperationDescription = pointsToAdd.ToString(), // Zapisz liczbę punktów jako tekst
+                DateTime = DateTime.UtcNow
+            });
+
+            return true; // Operacja zakończona sukcesem
         }
-    
+
+
         public async Task<int> ReturnBookAsync(int userId, int bookId)
         {
             // Pobierz dane wypo�yczenia
