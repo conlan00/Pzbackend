@@ -21,7 +21,7 @@ public class BookService : IBookService
             _pointsRepository = pointsRepository;
     }
 
-        public async Task<bool> ReturnBook(int userId, int bookId, int shelterId)
+        public async Task<int> ReturnBook(int userId, int bookId, int shelterId)
         {
             // Using transaction to ensure atomicity
             using var transaction = await _libraryContext.Database.BeginTransactionAsync();
@@ -44,6 +44,7 @@ public class BookService : IBookService
                         {
                             points = 30;
                             await _bookRepository.setLoyaltyPoints(points, userId);
+                            return points;
                         }
                         else if (returnDays > returnDeadlineInDays)
                         {
@@ -52,6 +53,7 @@ public class BookService : IBookService
                             int additionalDaysPenalty = Math.Max(delayDays - 7, 0) * -15;
                             points = firstWeekPenalty + additionalDaysPenalty;
                             await _bookRepository.setLoyaltyPoints(points, userId);
+                            return points;
                         }
 
                         // Add a record to OperationHistory
@@ -68,7 +70,7 @@ public class BookService : IBookService
                     }
 
                     await transaction.CommitAsync();
-                    return true;
+                    //return 1234567890;
                 }
             }
             catch (Exception)
@@ -77,7 +79,7 @@ public class BookService : IBookService
                 throw;
             }
 
-            return false;
+            return 123456789;
         }
 
         public async Task<BookDto2?> GetBookByIdAsync(int id)
