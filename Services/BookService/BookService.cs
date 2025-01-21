@@ -1,5 +1,7 @@
 ﻿using Backend.Models;
 using Backend.Repositories.BookRepository;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services.BookService
 {
@@ -83,6 +85,85 @@ public class BookService : IBookService
         {
             return await _bookRepository.GetBooksByShelterAndCategoriesAsync(shelterId, categoryIds);
         }
+
+public async Task<object> AddBookWithGoogleApiAsync(AddBookRequest request)
+{
+    // Pobieranie danych z Google Books API
+    string googleBooksApiUrl = $"https://www.googleapis.com/books/v1/volumes?q=intitle:{request.Title}&inauthor:{request.Author}";
+    using var httpClient = new HttpClient();
+    var response = await httpClient.GetAsync(googleBooksApiUrl);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception("Failed to fetch data from Google Books API.");
     }
-    
+
+    var jsonResponse = await response.Content.ReadAsStringAsync();
+    var googleBooksData = JsonDocument.Parse(jsonResponse);
+
+    var volumeInfo = googleBooksData.RootElement.GetProperty("items")[0].GetProperty("volumeInfo");
+
+    // Pobranie danych z API
+    string description = volumeInfo.TryGetProperty("description", out var desc) ? desc.GetString() : "No description provided";
+    string? coverUrl = volumeInfo.TryGetProperty("imageLinks", out var imageLinks) && imageLinks.TryGetProperty("thumbnail", out var thumbnail)
+        ? thumbnail.GetString()
+        : null;
+    string categoryName = volumeInfo.TryGetProperty("categories", out var categoriesJson) && categoriesJson.GetArrayLength() > 0
+        ? categoriesJson[0].GetString() ?? "Uncategorized"
+        : "Uncategorized";
+
+    // Sprawdzenie lub dodanie kategorii
+    var category = await _libraryContext.Categories
+        .FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+    if (category == null)
+    {
+        category = new Category { CategoryName = categoryName };
+        _libraryContext.Categories.Add(category);
+        await _libraryContext.SaveChangesAsync();
+    }
+
+    // Dodanie książki do bazy danych
+    var newBook = new Book
+    {
+        Title = request.Title,
+        Author = request.Author,
+        Publisher = request.Publisher,
+        Description = description,
+        Cover = coverUrl,
+        CategoryId = category.Id
+    };
+
+    _libraryContext.Books.Add(newBook);
+    await _libraryContext.SaveChangesAsync();
+
+    // Dodanie rekordu w BookArrival
+    var bookArrival = new BookArrival
+    {
+        UserId = request.UserId,
+        BookId = newBook.Id,
+        ShelterId = request.ShelterId,
+        DateTime = DateTime.UtcNow
+    };
+
+    _libraryContext.BookArrivals.Add(bookArrival);
+    await _libraryContext.SaveChangesAsync();
+
+    return new
+    {
+        Message = "Book and category added successfully.",
+        BookId = newBook.Id,
+        Category = category.CategoryName,
+        CoverUrl = coverUrl,
+        Description = description
+    };
+}
+
+
+
+
+
+
+
+
+    }
 }

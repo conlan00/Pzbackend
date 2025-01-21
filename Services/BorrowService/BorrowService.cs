@@ -38,5 +38,32 @@ namespace Backend.Services.BorrowService
         {
             return await _borrowRepository.DeleteBorrowRecordAsync(borrow);
         }
+
+        public async Task<Borrow> BorrowBookAsync(int userId, int bookId, int shelterId)
+    {
+        // Sprawdzenie, czy książka jest dostępna w budce
+        var book = await _borrowRepository.GetBookInShelterAsync(bookId, shelterId);
+
+        if (book == null)
+        {
+            throw new KeyNotFoundException($"Book with ID {bookId} is not available in Shelter with ID {shelterId}.");
+        }
+
+        // Tworzenie rekordu Borrow
+        var borrow = new Borrow
+        {
+            UserId = userId,
+            BookId = bookId,
+            BeginDate = DateTime.UtcNow,
+            EndTime = DateTime.UtcNow.AddDays(14)
+        };
+
+        await _borrowRepository.AddBorrowAsync(borrow);
+
+        // Zapis zmian
+        await _borrowRepository.SaveChangesAsync();
+
+        return borrow;
+    }
     }
 }
