@@ -3,6 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
+    public class ErrorResponse
+    {
+        public string Message { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]")]
     public class PointsController : ControllerBase
@@ -21,7 +26,7 @@ namespace Backend.Controllers
 
             if (history == null || !history.Any())
             {
-                return NotFound(new { Message = "No points history found for this user." });
+                return NotFound(new ErrorResponse { Message = "No points history found for this user." });
             }
 
             return Ok(history);

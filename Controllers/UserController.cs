@@ -29,18 +29,24 @@ namespace Backend.Controllers
             _bookRepository = bookRepository;
         }
 
-        [HttpPost("{userId}/add-points")]
-        public async Task<IActionResult> AddPointsToUser(int userId, [FromQuery] int pointsToAdd = 80)
-        {
-            var result = await _userService.AddPointsToUserAsync(userId, pointsToAdd);
+  [HttpPost("{userId}/add-points")]
+public async Task<IActionResult> AddPointsToUser(int userId, [FromQuery] int pointsToAdd = 80)
+{
+    if (!await _userService.UserExistsAsync(userId))
+    {
+        return NotFound(); // Zwraca 404, gdy użytkownik nie istnieje
+    }
 
-            if (!result)
-            {
-                return Ok(false); // Zwracamy false, gdy użytkownik nie istnieje
-            }
+    var result = await _userService.AddPointsToUserAsync(userId, pointsToAdd);
 
-            return Ok(true); // Zwracamy true, gdy operacja się powiodła
-        }
+    if (!result)
+    {
+        return StatusCode(500, "Nie udało się dodać punktów."); // Zwraca 500 w przypadku niepowodzenia
+    }
+
+    return Ok(); // Zwraca 200, gdy operacja się powiodła
+}
+
 
         //[Authorize]
         [HttpPost("register")]

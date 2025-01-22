@@ -37,10 +37,15 @@ namespace Backend.Controllers
 
             });
         }
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById(int id)
         {
+            // Walidacja ID
+            if (id <= 0)
+            {
+                return BadRequest("ID must be a positive integer greater than zero.");
+            }
+
             var book = await _bookService.GetBookByIdAsync(id);
 
             if (book == null)
@@ -50,6 +55,7 @@ namespace Backend.Controllers
 
             return Ok(book);
         }
+
         [HttpPost("give-like")]
         public async Task<IActionResult> GiveLike(int userId, int bookId)
         {
@@ -91,6 +97,12 @@ namespace Backend.Controllers
         [HttpPatch("extend")]
         public async Task<IActionResult> ExtendBorrow(int userId, int bookId, [FromQuery] int additionalDays)
         {
+            // Walidacja additionalDays
+            if (additionalDays <= 0)
+            {
+                return BadRequest(new { Message = "Additional days must be greater than zero." });
+            }
+
             // Pobierz rekord wypożyczenia
             var borrow = await _libraryContext.Borrows
                 .FirstOrDefaultAsync(b => b.UserId == userId && b.BookId == bookId);
@@ -108,15 +120,21 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-               
                 NewReturnTime = borrow.EndTime
             });
         }
 
 
+
         [HttpGet("filter")]
         public async Task<IActionResult> FilterBooks([FromQuery] int shelterId, [FromQuery] List<int>? categoryIds = null)
         {
+            // Walidacja shelterId
+            if (shelterId <= 0)
+            {
+                return BadRequest(new { Message = "Invalid shelter ID" });
+            }
+
             var books = await _bookService.GetFilteredBooksAsync(shelterId, categoryIds);
 
             if (!books.Any())
@@ -133,6 +151,7 @@ namespace Backend.Controllers
                 CategoryId = book.CategoryId
             }));
         }
+
 
         [HttpGet("all-categories")]
         public async Task<IActionResult> GetAllCategories()
@@ -168,5 +187,13 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = ex.Message });
             }
         }
+
+
+
+
+
+
+
+
     }
 }

@@ -14,6 +14,11 @@ namespace Backend.Repositories.UserRepository
         {
             _libraryContext = libraryContext;
         }
+
+        public async Task<bool> UserExistsAsync(int userId)
+        {
+            return await _libraryContext.Users.AnyAsync(u => u.Id == userId);
+        }
         public async Task<int> Register(User user)
         {
             // var user= await _libraryContext.Users.FirstOrDefaultAsync();

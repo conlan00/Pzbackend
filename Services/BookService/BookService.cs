@@ -21,6 +21,10 @@ public class BookService : IBookService
             _pointsRepository = pointsRepository;
     }
 
+        public BookService(IBookRepository @object)
+        {
+        }
+
         public async Task<int> ReturnBook(int userId, int bookId, int shelterId)
         {
             // Using transaction to ensure atomicity

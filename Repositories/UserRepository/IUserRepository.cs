@@ -11,6 +11,7 @@ namespace Backend.Repositories.UserRepository
         Task<int> Register(User user);
         Task<int> GetLoyaltyPoints(int userId);
         Task<int?> GetUserIdByNameAsync(string name);
+        Task<bool> UserExistsAsync(int userId);
 
 
     }

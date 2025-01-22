@@ -51,6 +51,10 @@ namespace Backend.Services.UserService
             return true; // Operacja zakończona sukcesem
         }
 
+        public async Task<bool> UserExistsAsync(int userId)
+        {
+            return await _userRepository.UserExistsAsync(userId);
+        }
 
         public async Task<int> ReturnBookAsync(int userId, int bookId)
         {

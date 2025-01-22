@@ -6,5 +6,7 @@ namespace Backend.Services.UserService
     {
         Task<bool> AddPointsToUserAsync(int userId, int pointsToAdd);
         Task<int> ReturnBookAsync(int userId, int bookId);
+        Task<bool> UserExistsAsync(int userId);
+
     }
 }
